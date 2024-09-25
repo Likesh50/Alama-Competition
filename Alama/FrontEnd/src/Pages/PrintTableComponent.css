@@ -1,44 +1,65 @@
-
-
-
-
 .print-container {
-    font-family: 'Arial', sans-serif;
-    padding: 20px;
+  font-family: 'Arial', sans-serif;
+  padding: 20px;
+  margin: 30px;
+  min-height: 100vh; /* Ensure the container takes full viewport height */
+  display: flex;
+  flex-direction: column;
+}
 
-  }
-  
-  .logos{
-    margin-left: 580px;
+.logos {
+  margin: 0% 42%;
+}
+
+.title {
+  text-align: center;
+  font-size: 52px;
+  color: #C0C0C0;
+  font-weight: 600;
+}
+
+.small-text {
+  font-size: 28px;
+}
+
+.title span {
+  color: #FFD700;
+}
+
+.print-table {
+  width: 100%;
+  border-collapse: collapse;
+  flex-grow: 1; /* Allow the table to grow and push the footer down */
+}
+
+.print-table th, .print-table td {
+  border: 1px solid #000;
+  padding: 10px;
+}
+
+.print-footer {
+  background: linear-gradient(to right, #FFA500, #FF4500);
+  color: white;
+  text-align: center;
+  padding: 10px 0;
+  font-size: 12px;
+  font-weight: bold;
+  box-shadow: 0px -3px 5px rgba(0, 0, 0, 0.2);
+  margin-top: 20px; /* Ensure the footer sticks to the bottom when there's space */
+}
+
+/* Ensure the footer stays at the bottom on printed pages */
+@media print {
+  .print-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
   }
 
-  .title{
-    text-align: center;
-    font-size: 52px;
-    color: #dd5914;
-  }
-
-  .small-text{
-    font-size: 28px;
-  }
-
-  .title span{
-    color: #FFD700;
-  }
-  
-  .print-table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  
-  .print-table th, .print-table td {
-    border: 1px solid #000;
-    padding: 10px;
-  }
-  
   .print-footer {
-    text-align: center;
-    margin-top: 30px;
-    font-size: 12px;
+
+    bottom: 0;
+    left: 0;
+    right: 0;
   }
-  
+}

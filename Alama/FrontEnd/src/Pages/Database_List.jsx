@@ -4,7 +4,7 @@ import * as XLSX from 'xlsx'; // Import XLSX for Excel export
 import './Database_List.css';
 import { useReactToPrint } from 'react-to-print';
 import PrintTableComponent from './PrintTableComponent';
-
+import { HashLoader } from 'react-spinners';
 // Natural sorting function
 const naturalSort = (a, b) => {
   const splitA = a.split('-').map(Number);
@@ -38,11 +38,14 @@ const Database_List = () => {
   const [uniqueValues, setUniqueValues] = useState([]);
   const [selectedValue, setSelectedValue] = useState('');
   const [filteredData, setFilteredData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  
   const printRef = useRef();
 
   // Fetch data from the backend and compute the "Level" column
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       try {
         const res = await axios.get('http://localhost:5000/data2');
         console.log('Fetched data:', res.data);
@@ -60,6 +63,9 @@ const Database_List = () => {
         setFilteredData(dataWithLevel); // Initially, all data is displayed
       } catch (err) {
         console.error('Error fetching data:', err);
+      }
+      finally{
+        setLoading(false);
       }
     };
 
@@ -143,12 +149,14 @@ const Database_List = () => {
       </div>
 
       {/* Export Button */}
-      <button className="export-btn" onClick={exportToExcel}>
-        Export to Excel
-      </button>
-      <button className="print-btn" onClick={handlePrint}>
-        Print Table
-      </button>
+      <div >
+          <button className="export-btn" onClick={exportToExcel}>
+            Export to Excel
+          </button>
+          <button className="print-btn" style={{gap:"300px"}}   onClick={handlePrint}>
+              Print Table
+          </button>
+      </div>
 
       <div style={{ display: 'none' }}>
         <PrintTableComponent ref={printRef} filteredData={filteredData} />
@@ -167,12 +175,27 @@ const Database_List = () => {
           {filteredData.map((row, index) => (
             <tr key={index}>
               {Object.values(row).map((value, idx) => (
-                <td key={idx}>{value}</td>
+                <td key={idx} style={{color:"#FFA500"}}>{value}</td>
               ))}
             </tr>
           ))}
         </tbody>
       </table>
+      {loading && (
+        <div style={{
+          position: 'fixed',
+          top: '0',
+          left: '0',
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: 'rgba(255, 255, 255, 0.7)',
+        }}>
+          <HashLoader color="#3498db" loading={loading} size={60} />
+        </div>
+      )}
     </div>
   );
 };

@@ -1,14 +1,22 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { HashLoader } from 'react-spinners';
+import './UploadExcel.css';
+import upload from '../assets/upload.png';
 const UploadExcel = () => {
   const [file, setFile] = useState(null);
   const [message, setMessage] = useState('');
-  const [loading, setLoading] = useState(false);  // New state for loading
+  const [loading, setLoading] = useState(false);
 
   // Handle file selection
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
+  };
+
+  // Handle file removal
+  const handleFileRemove = () => {
+    setFile(null);
+    setMessage('');
   };
 
   // Handle form submission
@@ -46,11 +54,27 @@ const UploadExcel = () => {
   };
 
   return (
-    <div>
+    <div className="upload-container">
       <h2>Upload Excel File</h2>
-      <form onSubmit={handleSubmit}>
-        <input type="file" onChange={handleFileChange} accept=".xlsx, .xls" />
-        <button type="submit" disabled={loading}>Upload</button>
+      <form onSubmit={handleSubmit} className="upload-form">
+        {!file && (
+          <div className="file-upload">
+            <input type="file" className="file-input" onChange={handleFileChange} accept=".xlsx, .xls" />
+            <img src={upload} width={250} height={250}/>
+            <label className="file-label">Choose a file</label>
+          </div>
+        )}
+
+        {file && (
+          <div className="file-card">
+            <span className="file-name">{file.name}</span>
+            <button type="button" className="delete-btn" onClick={handleFileRemove}>
+              &times;
+            </button>
+          </div>
+        )}
+
+        <div type="submit" className="upload-btn" disabled={loading || !file}>Upload</div>
       </form>
 
       {loading && (
@@ -68,7 +92,7 @@ const UploadExcel = () => {
           <HashLoader color="#3498db" loading={loading} size={60} />
         </div>
       )}
-      {!loading && message && <p>{message}</p>}  {/* Show result message after process completes */}
+      {!loading && message && <p>{message}</p>}
     </div>
   );
 };
