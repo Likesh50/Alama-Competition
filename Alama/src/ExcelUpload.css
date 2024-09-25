@@ -1,0 +1,202 @@
+.table-container {
+    max-width: 1800px;
+    margin: 50px auto;
+    border-radius: 10px;
+    overflow: hidden;
+    background-color: #ffffff;
+
+  }
+
+  .excel-page{
+    background-image: url('./assets/login.jpg');
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
+    background-size: cover;
+    height:100%;
+  }
+
+
+  
+
+  
+  h2 {
+    text-align: center;
+    font-family: 'Montserrat', sans-serif;
+    color: #2c3e50; /* Dark color for header */
+    margin: 20px 0;
+  }
+  
+  table {
+    width: 90%;
+    border-collapse: collapse;
+    font-family: 'Montserrat', sans-serif;
+  }
+  
+  thead {
+    background-color: #3498db; /* Blue header */
+    color: white;
+  }
+  
+  th, td {
+    padding: 15px;
+    border-bottom: 1px solid #dddddd;
+    font-size: 16px;
+  }
+  
+  tbody tr {
+    transition: background-color 0.3s;
+  }
+  
+  tbody tr:nth-child(even) {
+    background-color: #f7f9fc; /* Light gray for even rows */
+  }
+  
+  tbody tr:hover {
+    background-color: #ecf6ff; /* Light blue on hover */
+  }
+  
+  th {
+    font-weight: bold;
+    text-align: left;
+  }
+  
+  td {
+    color: #34495e; /* Dark gray for text */
+  }
+  
+  @media (max-width: 768px) {
+    table, thead, tbody, th, td, tr {
+      display: block;
+      width: 100%;
+    }
+    thead {
+      display: none;
+    }
+    tr {
+      margin-bottom: 10px;
+    }
+    td {
+      padding: 10px;
+      position: relative;
+      text-align: left;
+    }
+    td:before {
+      content: attr(data-label);
+      position: absolute;
+      left: 10px;
+      font-weight: bold;
+      color: #3498db; /* Accent color for labels */
+      text-transform: uppercase;
+    }
+  }
+
+
+  input[type="text"] {
+    width: 80%;            /* Make input fill the cell */
+    padding: 8px;          /* Add some padding */
+    border: 1px solid #ccc;/* Light gray border */
+    border-radius: 4px;    /* Rounded corners */
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1); /* Subtle inner shadow */
+    font-size: 16px;       /* Font size */
+    transition: border-color 0.3s ease; /* Smooth transition for focus effect */
+  }
+  
+  /* Change border color on focus */
+  input[type="text"]:focus {
+    border-color: #4d195e; /* Change to your primary color */
+    outline: none;          /* Remove default outline */
+    box-shadow: 0 0 5px rgba(77, 25, 94, 0.5); /* Add a glow effect */
+  }
+  
+  
+  .upload-btn {
+    display: inline-block;
+    padding: 12px 25px;
+    font-size: 16px;
+    font-family: 'Montserrat', sans-serif;
+    color: #ffffff;
+    background-color: #3498db; /* Blue color */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .upload-btn:hover {
+    background-color: #2980b9; /* Darker blue on hover */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+  }
+  
+  .upload-btn:active {
+    transform: scale(0.98);
+    background-color: #2574a9; /* Slightly darker blue when clicked */
+  }
+  
+  .upload-btn input[type="file"] {
+    display: none;
+  }
+  
+  .custom-dropdown-container {
+    position: relative;
+    display: inline-block;
+  }
+  
+  .dropdown-toggle {
+    padding: 12px 20px;
+    font-size: 16px;
+    font-family: 'Montserrat', sans-serif;
+    background-color: #3498db; /* Blue */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .dropdown-toggle:hover {
+    background-color: #2980b9; /* Darker blue */
+  }
+  
+  .dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 1;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    min-width: 160px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    margin-top: 10px;
+    padding: 0;
+  }
+  
+  .dropdown-item {
+    padding: 12px 20px;
+    font-size: 16px;
+    font-family: 'Montserrat', sans-serif;
+    color: #34495e; /* Dark gray */
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .dropdown-item:hover {
+    background-color: #ecf6ff; /* Light blue on hover */
+  }
+  
+  .dropdown-menu li {
+    list-style-type: none;
+  }
+  
+  .mt-4 {
+    margin-top: 1.5rem;
+  }
+  
+  @media (max-width: 768px) {
+    .dropdown-menu {
+      min-width: 100%;
+    }
+  }
+  

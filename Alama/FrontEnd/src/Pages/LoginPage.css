@@ -1,0 +1,70 @@
+.loginpage {
+    background-image: url('../assets/login.jpg');
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
+    background-size: cover;
+    height: 100vh;
+    width: 100%;   
+}
+
+.login-form {
+  position: absolute;
+  top: 50%;
+  left: 17%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(244, 244, 244, 0.9); 
+  padding: 60px 30px;
+  border-radius: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  width: 250px; 
+  max-width: 90%; 
+}
+
+.flower-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.flower-logo img {
+  width: 200px;
+  height: 100px;
+  border-radius: 20px;
+  background-color: transparent;
+  margin-bottom: 10px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+  margin-right:20px;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+button[type="submit"] {
+  background-color: #1e620a;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-left: 33%;
+}
+
+a {
+  color: #007bff;
+  text-decoration: none;
+  margin-top: 10px;
+}
+
+a:hover {
+  text-decoration: underline;
+}

@@ -1,0 +1,131 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body, html {
+    font-family: 'Arial', sans-serif;
+    height: 100%;
+    background-color: #FDF3E7; /* Background color similar to the template */
+  }
+  
+  .navbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 50px;
+    background-color: transparent;
+    z-index: 1000;
+  }
+  
+  .logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333;
+  }
+  
+  .nav-links {
+    list-style: none;
+    display: flex;
+  }
+  
+  .nav-links li {
+    margin-left: 30px;
+  }
+  
+  .nav-links a {
+    text-decoration: none;
+    font-size: 1rem;
+    color: #333;
+    transition: color 0.3s;
+  }
+  
+  .nav-links a:hover {
+    color: #FF6B3B; /* Hover color */
+  }
+  
+  .menu-icon {
+    font-size: 1.5rem;
+    color: #333;
+    cursor: pointer;
+    display: none; /* Initially hidden */
+  }
+  
+  .hero-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 100px 50px;
+    height: 100vh;
+  }
+  
+  .hero-content {
+    width: 50%;
+  }
+  
+  .hero-content h1 {
+    font-size: 3rem;
+    color: #333;
+    margin-bottom: 20px;
+  }
+  
+  .hero-content p {
+    font-size: 1rem;
+    color: #777;
+    margin-bottom: 30px;
+  }
+  
+  .cta-button {
+    background-color: #FF6B3B;
+    color: #fff;
+    padding: 15px 30px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: bold;
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease;
+  }
+  
+  .cta-button:hover {
+    background-color: #E5551E;
+  }
+  
+  .hero-image {
+    width: 50%;
+  }
+  
+  .hero-image img {
+    width: 100%;
+    border-radius: 20px;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+  }
+  
+  @media (max-width: 768px) {
+    .nav-links {
+      display: none;
+    }
+  
+    .menu-icon {
+      display: block;
+    }
+  
+    .hero-section {
+      flex-direction: column;
+      text-align: center;
+      padding-top: 120px;
+    }
+  
+    .hero-content {
+      width: 100%;
+      margin-bottom: 30px;
+    }
+  
+    .hero-image {
+      width: 100%;
+    }
+  }
+  

@@ -1,0 +1,16 @@
+.main-frame {
+    width: 100%;
+    box-sizing: border-box;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
+    background-size: cover;
+    margin-top: 75px;
+    width: 100%;
+    height: 100%;
+
+  }
+  .pw{
+    display: flex;
+    flex-direction: row;
+  }

@@ -1,0 +1,29 @@
+ .text-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px; /* Optional: add space between words */
+    
+  }
+  
+  .word {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    color: #708090;
+  }
+  
+  .word.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  .highlight-abacus {
+    color: #dd5914; /* Color for the word "Abacus" */
+    font-weight: bold; /* Optional: make the highlighted word bold */
+  }
+  
+  .highlight-alama {
+    color: #4f1660; /* Color for the word "ALAMA" */
+    font-weight: italic; /* Optional: italicize the highlighted word */
+  }
+  

@@ -1,0 +1,87 @@
+.upload-container {
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f7f8fc;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  h2 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .upload-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .file-upload {
+    border: 2px dashed #3498db;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    background-color: #f7f8fc;
+    position: relative;
+  }
+  
+  .file-input {
+    opacity: 0;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+  }
+  
+  .file-label {
+    font-size: 16px;
+    color: #3498db;
+    cursor: pointer;
+  }
+  
+  .upload-btn {
+    background-color: #3498db;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+  }
+  
+  .upload-btn:disabled {
+    background-color: #bbb;
+  }
+  
+  .progress-container {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .progress-bar {
+    width: 100%;
+    height: 10px;
+    background-color: #3498db;
+    border-radius: 5px;
+    transition: width 0.4s ease;
+  }
+  
+  .upload-status {
+    margin-top: 10px;
+    text-align: center;
+    font-size: 16px;
+  }
+  
+  .upload-status.success p {
+    color: #2ecc71;
+  }
+  
+  .upload-status.error p {
+    color: #e74c3c;
+  }
+  
