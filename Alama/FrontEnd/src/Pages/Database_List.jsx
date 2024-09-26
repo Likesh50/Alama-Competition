@@ -1,10 +1,11 @@
 import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
-import * as XLSX from 'xlsx'; // Import XLSX for Excel export
+import * as XLSX from 'xlsx'; 
 import './Database_List.css';
 import { useReactToPrint } from 'react-to-print';
 import PrintTableComponent from './PrintTableComponent';
 import { HashLoader } from 'react-spinners';
+
 // Natural sorting function
 const naturalSort = (a, b) => {
   const splitA = a.split('-').map(Number);
@@ -14,6 +15,14 @@ const naturalSort = (a, b) => {
     return (splitA[i] || 0) - (splitB[i] || 0);
   }
   return 0;
+};
+
+// Helper function to convert keys to human-readable format
+const formatHeader = (key) => {
+  return key
+    .split('_')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
 };
 
 // Preprocess data to remove duplicates and apply natural sorting
@@ -42,7 +51,7 @@ const Database_List = () => {
   
   const printRef = useRef();
 
-  // Fetch data from the backend and compute the "Level" column
+  // Fetch data from the backend
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -52,19 +61,16 @@ const Database_List = () => {
 
         // Preprocess data to remove duplicates and apply natural sorting
         const processedData = preprocessData(res.data);
-
-        // Compute the new "Pro + Level" column
         const dataWithLevel = processedData.map((row) => ({
           ...row,
           "Pro + Level": (row.pro || 0) + " " + (row.level || 0),
         }));
 
         setTableData(dataWithLevel);
-        setFilteredData(dataWithLevel); // Initially, all data is displayed
+        setFilteredData(processedData); // Initially, all data is displayed
       } catch (err) {
         console.error('Error fetching data:', err);
-      }
-      finally{
+      } finally {
         setLoading(false);
       }
     };
@@ -123,7 +129,7 @@ const Database_List = () => {
             {tableData.length > 0 &&
               Object.keys(tableData[0]).map((key) => (
                 <option key={key} value={key}>
-                  {key}
+                  {formatHeader(key)}
                 </option>
               ))}
           </select>
@@ -165,22 +171,48 @@ const Database_List = () => {
       <table className="table-container" border="1" cellPadding="10" cellSpacing="0">
         <thead>
           <tr>
+         
             {filteredData.length > 0 &&
-              Object.keys(filteredData[0]).map((key) => (
-                <th key={key}>{key}</th>
-              ))}
+              Object.keys(filteredData[0]).map((key) =>
+                key!=="Pro + Level" &&(
+                key === "position" ? (
+                  <>
+                    <th key={`${key}-pro-level`}>Pro + Level</th>
+                    <th key={key}>{formatHeader(key)}</th>
+                  </>
+                ) : (
+                  <th key={key}>{formatHeader(key)}</th>
+                ))
+              )}
           </tr>
         </thead>
         <tbody>
           {filteredData.map((row, index) => (
             <tr key={index}>
-              {Object.values(row).map((value, idx) => (
-                <td key={idx} style={{color:"#FFA500"}}>{value}</td>
-              ))}
+              {Object.entries(row).map(([key, value], idx) =>
+                key==="s_no"?<td  style={{ color: "#FFA500" }}> {index + 1}</td>:
+                key === "position" ? (
+                  <>
+                    <td key={`${idx}-pro-level`} style={{ color: "#FFA500" }}>
+                      {row.pro} {row.level}
+                    </td>
+                    <td key={idx} style={{ color: "#FFA500" }}>
+                      {value}
+                    </td>
+                  </>
+                ) : (
+                  key !== "Pro + Level" && (
+                    <td key={idx} style={{ color: "#FFA500" }}>
+                      {value}
+                    </td>
+                  )
+                )
+              )}
             </tr>
           ))}
         </tbody>
       </table>
+
       {loading && (
         <div style={{
           position: 'fixed',
