@@ -153,7 +153,7 @@ const Database_List = () => {
           <button className="export-btn" onClick={exportToExcel}>
             Export to Excel
           </button>
-          <button className="print-btn" style={{gap:"300px"}}   onClick={handlePrint}>
+          <button className="print-btn" style={{marginLeft :"1190px"}}  onClick={handlePrint}>
               Print Table
           </button>
       </div>
@@ -193,7 +193,7 @@ const Database_List = () => {
           alignItems: 'center',
           backgroundColor: 'rgba(255, 255, 255, 0.7)',
         }}>
-          <HashLoader color="#3498db" loading={loading} size={60} />
+          <HashLoader color="#501960" loading={loading} size={90} />
         </div>
       )}
     </div>

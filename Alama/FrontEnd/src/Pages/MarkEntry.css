@@ -1,0 +1,193 @@
+/* MarkEntry.css */
+.containers {
+    max-width: 1460px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    margin-top: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+    border: 1px solid #ddd; /* Soft border */
+
+}
+  
+  h2 {
+    color: #2c3e50;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .select-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+  
+  label {
+    font-weight: bold;
+    margin-right: 10px;
+  }
+  
+  select {
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+  }
+  
+  table {
+    width: 99%;
+  border-collapse: collapse;
+  font-family: 'Poppins', sans-serif;
+  background-color: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  thead {
+    background-color: #511562; /* Blue header */
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 0.8rem;
+  }
+  
+  th {
+    padding: 15px;
+    border-bottom: 1px solid #dddddd;
+    font-size: 16px;
+    text-align: center;
+  }
+  td{
+    color: #FFA500; 
+    padding: 15px;
+    border-bottom: 1px solid #dddddd;
+    font-size: 16px;
+    text-align: center;
+  }
+  
+  /* Table Body Styling */
+  tbody tr {
+    transition: background-color 0.3s;
+  }
+  
+  tbody tr:nth-child(even) {
+    background-color: #f7f9fc; /* Light gray for even rows */
+  }
+  
+  tbody tr:hover {
+    background-color: #ecf6ff; /* Light blue on hover */
+  }
+  
+  /* Responsive Table Design */
+  @media (max-width: 768px) {
+    table, thead, tbody, th, td, tr {
+      display: block;
+      width: 1400px;
+    }
+    thead {
+      display: none;
+    }
+    tr {
+      margin-bottom: 10px;
+    }
+    td {
+      padding: 10px;
+      position: relative;
+      text-align: left;
+    }
+    td:before {
+      content: attr(data-label);
+      position: absolute;
+      left: 10px;
+      font-weight: bold;
+      color: #3498db; /* Accent color for labels */
+      text-transform: uppercase;
+    }
+  }
+  
+  
+  td input {
+    padding: 6px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100px;
+  }
+  
+  button {
+    background-color: #2ecc71;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 20px;
+  }
+  
+  button:disabled {
+    background-color: #95a5a6;
+  }
+  
+  .message {
+    text-align: center;
+    font-size: 16px;
+  }
+  
+  .message.success {
+    color: green;
+  }
+  
+  .message.error {
+    color: red;
+  }
+
+  /* Dropdown container */
+.select-containers {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+
+  }
+  
+  .select-containers label {
+    font-weight: bold;
+    margin-right: 10px;
+    font-size: 16px;
+    color: #2c3e50;
+  }
+  
+  /* Style for the select dropdown */
+  .select-containers select {
+    padding: 10px;
+    font-size: 16px;
+    border: 2px solid #3498db;
+    border-radius: 4px;
+    outline: none;
+    transition: all 0.3s ease;
+    background-color: #f9f9f9;
+    color: #2c3e50;
+    cursor: pointer;
+    width: 100px;
+  }
+  
+  /* Add a subtle shadow to the dropdown */
+  .select-containers select:focus {
+    border-color: #2980b9;
+    box-shadow: 0 0 5px rgba(50, 150, 255, 0.5);
+  }
+  
+  /* Hover effect */
+  .select-containers select:hover {
+    background-color: #f0f8ff;
+  }
+  
+  /* Add style for option elements */
+  .select-containers select option {
+    padding: 10px;
+    background-color: #fff;
+    color: #2c3e50;
+  }
+  
+  

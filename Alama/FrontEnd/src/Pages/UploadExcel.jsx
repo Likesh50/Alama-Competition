@@ -89,7 +89,7 @@ const UploadExcel = () => {
           alignItems: 'center',
           backgroundColor: 'rgba(255, 255, 255, 0.7)',
         }}>
-          <HashLoader color="#3498db" loading={loading} size={60} />
+          <HashLoader color="#501960" loading={loading} size={90} />
         </div>
       )}
       {!loading && message && <p>{message}</p>}

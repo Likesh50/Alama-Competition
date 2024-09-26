@@ -24,6 +24,7 @@
     "react-router-dom": "^6.26.1",
     "react-spinners": "^0.14.1",
     "react-to-print": "^2.15.1",
+    "react-toastify": "^10.0.5",
     "styled-components": "^6.1.13",
     "typewriter-effect": "^2.21.0",
     "xlsx": "^0.18.5"
