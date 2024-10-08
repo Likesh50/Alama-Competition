@@ -192,7 +192,7 @@ const MarkEntry = () => {
         </tbody>
       </table>
 
-      <button onClick={updateMarks} disabled={isLoading}>Update Marks</button>
+      <button onClick={updateMarks} style={{marginLeft:"710px"}} disabled={isLoading}>Update Marks</button>
 
       {loading && (
         <div style={{
