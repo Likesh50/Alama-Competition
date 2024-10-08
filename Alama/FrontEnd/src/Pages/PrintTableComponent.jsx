@@ -4,7 +4,7 @@ import logo from '../assets/logo.png';
 
 const PrintTableComponent = React.forwardRef(({ filteredData }, ref) => {
   // Columns to exclude
-  const columnsToExclude = ['pro', 'level', 'std_cat', 'batch', 'row_no', 'roll_no','marks'];
+  const columnsToInclude = ['s_no','name_of_students', 'centre_name', 'Pro + Level', 'seat', 'position'];
 
   return (
     <div className="print-container" ref={ref}>
@@ -22,18 +22,19 @@ const PrintTableComponent = React.forwardRef(({ filteredData }, ref) => {
         <thead>
           <tr>
             {filteredData.length > 0 &&
-              Object.keys(filteredData[0]).filter(key => !columnsToExclude.includes(key)).map((key) => (
-                <th key={key}>{key}</th>
+              Object.keys(filteredData[0]).filter(key => columnsToInclude.includes(key)).map((key) => (
+                <th key={key}>{key === 's_no' ? 'S. No.' : key}</th>
               ))}
           </tr>
         </thead>
         <tbody>
           {filteredData.map((row, index) => (
             <tr key={index}>
-              {Object.keys(row).filter(key => !columnsToExclude.includes(key)).map((key, idx) => (
-                <td key={idx} style={{ color: "#FFA500" }}>{row[key]}</td>
-              ))}
-            </tr>
+            <td style={{ color: "#FFA500", padding: "5px" }}>{index + 1}</td>
+            {Object.keys(row).filter(key => columnsToInclude.includes(key) && key !== 's_no').map((key, idx) => (
+              <td key={idx} style={{ color: "#FFA500", padding: "5px" }}>{row[key]}</td>
+            ))}
+          </tr>
           ))}
         </tbody>
       </table>

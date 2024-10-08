@@ -74,7 +74,7 @@ const UploadExcel = () => {
           </div>
         )}
 
-        <div type="submit" className="upload-btn" disabled={loading || !file}>Upload</div>
+        <div onClick={(e)=>handleSubmit(e)} className="upload-btn" disabled={loading || !file}>Upload</div>
       </form>
 
       {loading && (

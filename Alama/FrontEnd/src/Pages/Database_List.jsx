@@ -51,16 +51,15 @@ const Database_List = () => {
   
   const printRef = useRef();
 
-  // Fetch data from the backend
   useEffect(() => {
     const fetchData = async () => {
-      setLoading(true);
+      setLoading(true); // Ensure loading starts
       try {
         const res = await axios.get('http://localhost:5000/data2');
         console.log('Fetched data:', res.data);
 
         // Preprocess data to remove duplicates and apply natural sorting
-        const processedData = preprocessData(res.data);
+        const processedData = res.data;
         const dataWithLevel = processedData.map((row) => ({
           ...row,
           "Pro + Level": (row.pro || 0) + " " + (row.level || 0),
@@ -68,15 +67,21 @@ const Database_List = () => {
 
         setTableData(dataWithLevel);
         setFilteredData(processedData); // Initially, all data is displayed
+
+        // Simulate a delay for the loader, but ensure the loading stops
+        // Adjust the delay as needed (in milliseconds)
       } catch (err) {
         console.error('Error fetching data:', err);
-      } finally {
-        setLoading(false);
+        setLoading(false); // Ensure loading stops even on error
+      }
+      finally{
+        setLoading(false); 
       }
     };
 
     fetchData();
   }, []);
+
 
   // Handle column selection
   const handleColumnSelect = (e) => {
@@ -115,7 +120,7 @@ const Database_List = () => {
 
   return (
     <div className="container">
-      <h2>Data Table</h2>
+      <h2>FINAL RESULTS</h2>
 
       <div className="dropdown-container">
         <div>
