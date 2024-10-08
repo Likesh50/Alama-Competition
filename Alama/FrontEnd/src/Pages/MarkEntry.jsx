@@ -162,24 +162,21 @@ const MarkEntry = () => {
       <table>
         <thead>
           <tr>
-            <th>Name</th>
-            <th>Centre</th>
+            
             <th>Pro</th>
             <th>Level</th>
             <th>Seat</th>
-            <th>Roll No</th>
+
             <th>Marks</th>
           </tr>
         </thead>
         <tbody>
           {students.map(student => (
             <tr key={student.seat}>
-              <td>{student.name_of_students}</td>
-              <td>{student.centre_name}</td>
+              
               <td>{student.pro}</td>
               <td>{student.level}</td>
               <td>{student.seat}</td>
-              <td>{student.roll_no}</td>
               <td>
                 <input
                   type="text"
