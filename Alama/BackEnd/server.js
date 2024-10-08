@@ -501,9 +501,75 @@ const determineCategory = (marks, level, grade) => {
       }
     }
   
-    return "-"; // Return null if no category is found
+    return "-"; 
   };
+  app.post('/updateMarks2', async (req, res) => {
+    const { marksData } = req.body;
+    console.log("Request received for updating marks");
+    console.log(marksData);
   
+    try {
+      for (const { seat, marks } of marksData) {
+        // Fetch the existing student data based on the seat
+        const result = await db.promise().query('SELECT * FROM students WHERE seat = ?', [seat]);
+        if (result[0].length === 0) {
+          return res.status(404).send(`No student found with seat number: ${seat}`);
+        }
+  
+        // Fetch the position for each seat using the ranking system
+        const categorizeQuery = `
+          WITH RankedStudents AS (
+            SELECT 
+              seat,
+              marks,
+              DENSE_RANK() OVER (ORDER BY marks DESC) AS rank
+            FROM students
+          ),
+          WinnerCategory AS (
+            SELECT 
+              seat, marks, 'winner' AS category
+            FROM RankedStudents
+            WHERE rank <= 20 OR marks = (SELECT marks FROM RankedStudents WHERE rank = 20)
+          ),
+          RunnerUpCategory AS (
+            SELECT 
+              seat, marks, 'runnerUp' AS category
+            FROM RankedStudents
+            WHERE rank > 20 AND rank <= 40 OR (rank > 20 AND marks = (SELECT marks FROM RankedStudents WHERE rank = 40))
+          ),
+          Runner2Category AS (
+            SELECT 
+              seat, marks, 'runner2' AS category
+            FROM RankedStudents
+            WHERE rank > 40 AND rank <= 60 OR (rank > 40 AND marks = (SELECT marks FROM RankedStudents WHERE rank = 60))
+          )
+          SELECT * FROM WinnerCategory
+          UNION ALL
+          SELECT * FROM RunnerUpCategory
+          UNION ALL
+          SELECT * FROM Runner2Category;
+        `;
+  
+        // Execute the categorization query
+        const categorizedResult = await db.promise().query(categorizeQuery);
+  
+        // Now, based on the categorization, update the student records
+        for (const student of categorizedResult[0]) {
+          const updateQuery = `
+            UPDATE students 
+            SET marks = ?, position = ? 
+            WHERE seat = ?;
+          `;
+          await db.promise().query(updateQuery, [marks, student.category, seat]);
+        }
+      }
+  
+      res.send('Marks updated and students categorized successfully');
+    } catch (err) {
+      console.error('Error updating marks and categorizing students:', err);
+      res.status(500).send('Error updating marks and categorizing students');
+    }
+  });
   app.post('/updateMarks', async (req, res) => {
     const { marksData } = req.body;
     console.log("Request received");

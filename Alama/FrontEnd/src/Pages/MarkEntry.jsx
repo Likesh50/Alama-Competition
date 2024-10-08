@@ -125,7 +125,7 @@ const MarkEntry = () => {
       marks,
     }));
   
-    axios.post('http://localhost:5000/updateMarks', { marksData: marksArray })
+    axios.post('http://localhost:5000/updateMarks2', { marksData: marksArray })
       .then(response => {
         setLoading(false);
         setIsLoading(false);
