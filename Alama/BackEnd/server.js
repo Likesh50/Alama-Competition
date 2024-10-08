@@ -18,7 +18,7 @@ app.use(express.json());
 const db = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    password: '1207', // Change this
+    password: 'pass123', // Change this
     database: 'alama' // Change this
 });
 
@@ -506,74 +506,54 @@ const determineCategory = (marks, level, grade) => {
   
     return "-"; 
   };
-  app.post('/updateMarks2', async (req, res) => {
-    const { marksData } = req.body;
-    console.log("Request received for updating marks");
-    console.log(marksData);
+  app.post('/updatePositions', async (req, res) => {
+    console.log("Request received to update student positions");
   
     try {
-      for (const { seat, marks } of marksData) {
-        // Fetch the existing student data based on the seat
-        const result = await db.promise().query('SELECT * FROM students WHERE seat = ?', [seat]);
-        if (result[0].length === 0) {
-          return res.status(404).send(`No student found with seat number: ${seat}`);
-        }
+      // Fetch the top 60 students by marks, categorized by pro, level, and std_cat
+      const [students] = await db.promise().query(`
+        WITH RankedStudents AS (
+          SELECT 
+            seat,
+            marks,
+            pro,
+            level,
+            std_cat,
+            RANK() OVER (PARTITION BY pro, level, std_cat ORDER BY marks DESC) AS student_rank
+          FROM 
+            students
+        )
+        SELECT 
+          seat,
+          marks,
+          CASE 
+            WHEN student_rank <= 20 THEN 'winner'
+            WHEN student_rank > 20 AND student_rank <= 40 THEN 'runnerUp'
+            ELSE 'runner2'
+          END AS position
+        FROM 
+          RankedStudents
+        WHERE 
+          student_rank <= 60
+      `);
   
-        // Fetch the position for each seat using the ranking system
-        const categorizeQuery = `
-          WITH RankedStudents AS (
-            SELECT 
-              seat,
-              marks,
-              DENSE_RANK() OVER (ORDER BY marks DESC) AS rank
-            FROM students
-          ),
-          WinnerCategory AS (
-            SELECT 
-              seat, marks, 'winner' AS category
-            FROM RankedStudents
-            WHERE rank <= 20 OR marks = (SELECT marks FROM RankedStudents WHERE rank = 20)
-          ),
-          RunnerUpCategory AS (
-            SELECT 
-              seat, marks, 'runnerUp' AS category
-            FROM RankedStudents
-            WHERE rank > 20 AND rank <= 40 OR (rank > 20 AND marks = (SELECT marks FROM RankedStudents WHERE rank = 40))
-          ),
-          Runner2Category AS (
-            SELECT 
-              seat, marks, 'runner2' AS category
-            FROM RankedStudents
-            WHERE rank > 40 AND rank <= 60 OR (rank > 40 AND marks = (SELECT marks FROM RankedStudents WHERE rank = 60))
-          )
-          SELECT * FROM WinnerCategory
-          UNION ALL
-          SELECT * FROM RunnerUpCategory
-          UNION ALL
-          SELECT * FROM Runner2Category;
-        `;
+      // Prepare update query
+      const updatePromises = students.map(student => {
+        const updateQuery = 'UPDATE students SET position = ? WHERE seat = ?';
+        return db.promise().query(updateQuery, [student.position, student.seat]);
+      });
   
-        // Execute the categorization query
-        const categorizedResult = await db.promise().query(categorizeQuery);
+      // Execute all update queries
+      await Promise.all(updatePromises);
   
-        // Now, based on the categorization, update the student records
-        for (const student of categorizedResult[0]) {
-          const updateQuery = `
-            UPDATE students 
-            SET marks = ?, position = ? 
-            WHERE seat = ?;
-          `;
-          await db.promise().query(updateQuery, [marks, student.category, seat]);
-        }
-      }
-  
-      res.send('Marks updated and students categorized successfully');
+      res.send('Student positions updated successfully');
     } catch (err) {
-      console.error('Error updating marks and categorizing students:', err);
-      res.status(500).send('Error updating marks and categorizing students');
+      console.error('Error updating student positions:', err);
+      res.status(500).send('Error updating student positions');
     }
   });
-  app.post('/updateMarks', async (req, res) => {
+  
+    app.post('/updateMarks', async (req, res) => {
     const { marksData } = req.body;
     console.log("Request received");
     console.log(marksData);
@@ -628,7 +608,7 @@ app.get('/batches', async (req, res) => {
     const query = `SELECT * 
 FROM students 
 ORDER BY 
-    pro,level,position desc;
+    pro,level,std_cat,position desc;
 `;
     console.log("Hello");
     db.query(query, (err, results) => {
