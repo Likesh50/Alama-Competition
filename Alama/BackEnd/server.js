@@ -4,7 +4,8 @@ const xlsx = require('xlsx');
 const mysql = require('mysql2');
 const cors = require('cors');
 const path = require('path');
-
+const bcrypt = require('bcrypt'); 
+const jwt = require('jsonwebtoken');
 // Initialize Express app
 const app = express();
 const PORT = 5000;
@@ -18,7 +19,7 @@ app.use(express.json());
 const db = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    password: 'pass123', // Change this
+    password: '1207', // Change this
     database: 'alama' // Change this
 });
 
@@ -30,8 +31,42 @@ db.connect((err) => {
     }
 });
 
+
+router.post('/login', (req, res) => {
+  const { username, password } = req.body;
+
+  // Query to get user details from the database
+  const query = `SELECT id, username, password, role FROM users WHERE username = ?`;
+
+  db.query(query, [username], (err, results) => {
+      if (err) return res.status(500).json({ message: 'Database error' });
+
+      if (results.length === 0) {
+          return res.status(400).json({ message: 'Invalid username or password' });
+      }
+
+      const user = results[0];
+
+      bcrypt.compare(password, user.password, (err, match) => {
+          if (!match) {
+              return res.status(400).json({ message: 'Invalid username or password' });
+          }
+
+
+          const token = jwt.sign(
+              { id: user.id, username: user.username, role: user.role },
+              process.env.JWT_SECRET, 
+              { expiresIn: '1h' } 
+          );
+
+          res.json({ token, role: user.role });
+      });
+  });
+});
+
 // Multer setup for file uploads
 const upload = multer({ dest: 'uploads/' });
+
 
 // Endpoint for file upload
 app.post('/upload', upload.single('file'), async (req, res) => {

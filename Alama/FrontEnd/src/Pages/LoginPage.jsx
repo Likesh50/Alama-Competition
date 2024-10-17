@@ -8,10 +8,17 @@ function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [role, setRole] = useState('');
   const navigate = useNavigate();
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
+      const response = await axios.post('/api/login', { username, password });
+            const { token, role } = response.data;
+
+            // Store token and role in local storage or context
+            localStorage.setItem('token', token);
+            setRole(role);
       navigate('/dashboard');
     } catch (err) {
       setError(err.message);
@@ -27,7 +34,7 @@ function LoginPage() {
         <form onSubmit={handleLogin}>
           <div className="form-group">
             <input
-              type="email" // Changed type to email
+              type="email" 
               id="username"
               placeholder="USERNAME"
               value={username}
