@@ -62,7 +62,7 @@ const Database_List = () => {
         const processedData = res.data;
         const dataWithLevel = processedData.map((row) => ({
           ...row,
-          "Pro + Level": (row.pro || 0) + " " + (row.level || 0),
+          "Pro + Level+ std cat": (row.pro || 0) + " " + (row.level || 0)+" "+(row.std_cat),
         }));
 
         setTableData(dataWithLevel);

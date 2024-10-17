@@ -99,6 +99,7 @@ const MarkEntry = () => {
             initialMarks[student.seat] = student.marks || '';
           });
           setMarksData(initialMarks);
+          console.log(sortedStudents);
         })
         .catch(error => {
           setLoading(false);
@@ -166,7 +167,7 @@ const MarkEntry = () => {
             <th>Pro</th>
             <th>Level</th>
             <th>Seat</th>
-
+            <th>std</th>
             <th>Marks</th>
           </tr>
         </thead>
@@ -177,6 +178,7 @@ const MarkEntry = () => {
               <td>{student.pro}</td>
               <td>{student.level}</td>
               <td>{student.seat}</td>
+              <td>{student.std_cat}</td>
               <td>
                 <input
                   type="text"

@@ -542,10 +542,21 @@ const determineCategory = (marks, level, grade) => {
     return "-"; 
   };
   app.post('/updatePositions', async (req, res) => {
-    console.log("Request received to update student positions");
+    console.log("Request received to update student marks and positions");
+  
+    const { marksData } = req.body;  // Expecting an array of { seat, marks }
   
     try {
-      // Fetch the top 60 students by marks, categorized by pro, level, and std_cat
+      // Update marks in the database first, ensuring the marks are treated as integers
+      const updateMarksPromises = marksData.map(({ seat, marks }) => {
+        // If marks is 'ab' or any other invalid value, set it to 0
+        const parsedMarks = isNaN(parseInt(marks, 10)) ? 0 : parseInt(marks, 10);
+        const updateQuery = 'UPDATE students SET marks = ? WHERE seat = ?';
+        return db.promise().query(updateQuery, [parsedMarks, seat]);
+      });
+      await Promise.all(updateMarksPromises);
+  
+      // Now, fetch the top 60 students by marks, categorized by pro, level, and std_cat
       const [students] = await db.promise().query(`
         WITH RankedStudents AS (
           SELECT 
@@ -572,22 +583,23 @@ const determineCategory = (marks, level, grade) => {
           student_rank <= 60
       `);
   
-      // Prepare update query
-      const updatePromises = students.map(student => {
-        const updateQuery = 'UPDATE students SET position = ? WHERE seat = ?';
-        return db.promise().query(updateQuery, [student.position, student.seat]);
+      // Prepare update query for both positions and marks
+      const updatePositionsAndMarksPromises = students.map(student => {
+        const parsedMarks = isNaN(parseInt(student.marks, 10)) ? 0 : parseInt(student.marks, 10);
+        const updateQuery = 'UPDATE students SET position = ?, marks = ? WHERE seat = ?';
+        return db.promise().query(updateQuery, [student.position, parsedMarks, student.seat]);
       });
   
-      // Execute all update queries
-      await Promise.all(updatePromises);
+      // Execute all position and marks update queries
+      await Promise.all(updatePositionsAndMarksPromises);
   
-      res.send('Student positions updated successfully');
+      res.send('Student marks and positions updated successfully');
     } catch (err) {
-      console.error('Error updating student positions:', err);
-      res.status(500).send('Error updating student positions');
+      console.error('Error updating student marks and positions:', err);
+      res.status(500).send('Error updating student marks and positions');
     }
   });
-  
+      
     app.post('/updateMarks', async (req, res) => {
     const { marksData } = req.body;
     console.log("Request received");
@@ -643,7 +655,7 @@ app.get('/batches', async (req, res) => {
     const query = `SELECT * 
 FROM students 
 ORDER BY 
-    pro,level,std_cat,position desc;
+    marks DESC    -- First, sort by marks in descending order
 `;
     console.log("Hello");
     db.query(query, (err, results) => {
