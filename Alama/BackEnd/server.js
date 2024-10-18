@@ -645,10 +645,18 @@ app.get('/batches', async (req, res) => {
   
   
   app.get('/data2', (req, res) => {
-    const query = `SELECT * 
-    FROM students 
+    const query = `
+    SELECT *
+    FROM students
     ORDER BY 
-        marks DESC    
+        CASE 
+            WHEN position = 'winner' THEN 1
+            WHEN position = 'runnerUp' THEN 2
+            WHEN position = 'runner2' THEN 3
+            ELSE 4  
+        END,
+    marks DESC
+
     `;
         console.log("Hello");
         db.query(query, (err, results) => {
@@ -662,5 +670,6 @@ app.get('/batches', async (req, res) => {
     });
 // Start the server
 app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+    console.log("You r up!!!");
 });
+

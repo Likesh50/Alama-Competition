@@ -132,7 +132,7 @@ const Database_List = () => {
   
     let filtered = tableData.filter((row) => String(row[selectedColumn]) === value);
   
-    if (selectedColumn === "Pro + Level+ std cat" || selectedColumn === "centre_name") {
+    if (selectedColumn === "centre_name") {
       filtered = filtered.filter((row) => row.position !== "-");
     }
   

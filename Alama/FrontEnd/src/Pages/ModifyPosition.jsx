@@ -131,6 +131,7 @@ const ModifyPosition = () => {
         <select
           value={selectedProLevelStdCat}
           onChange={(e) => setSelectedProLevelStdCat(e.target.value)}
+          style={{width:"130px"}}
         >
           {proLevelStdCatOptions.map((option, index) => (
             <option key={index} value={option}>{option}</option>
@@ -157,10 +158,11 @@ const ModifyPosition = () => {
         <td>{student.name_of_students}</td>
         <td>{student.marks}</td>
         <td>
-            <select
-            value={positionData[student.seat] || student.position}  // Use student.seat as the key, but show the current student.position as the default
-            onChange={(e) => handlePositionChange(student.seat, e.target.value)} // Track changes based on seat, but modify position
-            >
+        <select
+          value={positionData[student.seat] || student.position}  // Use student.seat as the key, show student.position as default
+          onChange={(e) => handlePositionChange(student.seat, e.target.value)}  // Track changes based on seat, modify position
+           // Use style prop for width
+        >
             <option value="winner">winner</option>
             <option value="runnerUp">runnerUp</option>
             <option value="runner2">runner2</option>
