@@ -32,38 +32,6 @@ db.connect((err) => {
 });
 
 
-router.post('/login', (req, res) => {
-  const { username, password } = req.body;
-
-  // Query to get user details from the database
-  const query = `SELECT id, username, password, role FROM users WHERE username = ?`;
-
-  db.query(query, [username], (err, results) => {
-      if (err) return res.status(500).json({ message: 'Database error' });
-
-      if (results.length === 0) {
-          return res.status(400).json({ message: 'Invalid username or password' });
-      }
-
-      const user = results[0];
-
-      bcrypt.compare(password, user.password, (err, match) => {
-          if (!match) {
-              return res.status(400).json({ message: 'Invalid username or password' });
-          }
-
-
-          const token = jwt.sign(
-              { id: user.id, username: user.username, role: user.role },
-              process.env.JWT_SECRET, 
-              { expiresIn: '1h' } 
-          );
-
-          res.json({ token, role: user.role });
-      });
-  });
-});
-
 // Multer setup for file uploads
 const upload = multer({ dest: 'uploads/' });
 
@@ -575,12 +543,13 @@ const determineCategory = (marks, level, grade) => {
           CASE 
             WHEN student_rank <= 20 THEN 'winner'
             WHEN student_rank > 20 AND student_rank <= 40 THEN 'runnerUp'
-            ELSE 'runner2'
+            WHEN student_rank > 40 AND student_rank <= 60 THEN 'runner2' 
+            ELSE '-' 
           END AS position
         FROM 
           RankedStudents
         WHERE 
-          student_rank <= 60
+          student_rank >= 0
       `);
   
       // Prepare update query for both positions and marks
@@ -650,23 +619,47 @@ app.get('/batches', async (req, res) => {
       res.status(500).send('Error fetching students');
     }
   });
+
+  app.post('/modifyPositions', async (req, res) => {
+    console.log(req.body);
+    const { positionData } = req.body;
+  
+    console.log('Received position data:', positionData); // Log the incoming data
+  
+    if (!Array.isArray(positionData)) {
+      return res.status(400).send('Invalid data format');
+    }
+  
+    try {
+      const query = `UPDATE students SET position = ? WHERE seat = ?`;
+      for (let record of positionData) {
+        console.log(`Updating seat ${record.seat} with position ${record.position}`);
+        await db.execute(query, [record.position, record.seat]);
+      }
+      res.send('Positions updated successfully');
+    } catch (error) {
+      console.error('Error updating positions:', error);
+      res.status(500).send('Error updating positions');
+    }
+  });
+  
   
   app.get('/data2', (req, res) => {
     const query = `SELECT * 
-FROM students 
-ORDER BY 
-    marks DESC    -- First, sort by marks in descending order
-`;
-    console.log("Hello");
-    db.query(query, (err, results) => {
-        if (err) {
-            console.error('Error fetching data:', err);
-            res.status(500).send('Error fetching data');
-        } else {
-            res.json(results);
-        }
+    FROM students 
+    ORDER BY 
+        marks DESC    
+    `;
+        console.log("Hello");
+        db.query(query, (err, results) => {
+            if (err) {
+                console.error('Error fetching data:', err);
+                res.status(500).send('Error fetching data');
+            } else {
+                res.json(results);
+            }
+        });
     });
-});
 // Start the server
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);

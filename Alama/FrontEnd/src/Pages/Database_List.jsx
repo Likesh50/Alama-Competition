@@ -6,18 +6,50 @@ import { useReactToPrint } from 'react-to-print';
 import PrintTableComponent from './PrintTableComponent';
 import { HashLoader } from 'react-spinners';
 
-// Natural sorting function
-const naturalSort = (a, b) => {
-  const splitA = a.split('-').map(Number);
-  const splitB = b.split('-').map(Number);
-  for (let i = 0; i < Math.max(splitA.length, splitB.length); i++) {
-    if (splitA[i] === splitB[i]) continue;
-    return (splitA[i] || 0) - (splitB[i] || 0);
+const romanToInt = (roman) => {
+  const romanMap = { I: 1, V: 5, X: 10, L: 50, C: 100, D: 500, M: 1000 };
+  let intVal = 0;
+  for (let i = 0; i < roman.length; i++) {
+    const current = romanMap[roman[i]];
+    const next = romanMap[roman[i + 1]];
+    if (next && current < next) {
+      intVal -= current;
+    } else {
+      intVal += current;
+    }
   }
-  return 0;
+  return intVal;
 };
 
-// Helper function to convert keys to human-readable format
+const naturalSort = (a, b) => {
+  // Split into 3 parts: prefix, number, and Roman numeral
+  const regex = /^([A-Z]{2})\s+(\d+)\s+([IVXLCDM]+)$/;
+  
+  const matchA = a.match(regex);
+  const matchB = b.match(regex);
+
+  if (!matchA || !matchB) {
+    return 0; // If not matching, consider them equal
+  }
+
+  const [ , prefixA, numA, romanA] = matchA;
+  const [ , prefixB, numB, romanB] = matchB;
+
+  // Compare the two-letter prefix (alphabetically)
+  if (prefixA !== prefixB) {
+    return prefixA.localeCompare(prefixB);
+  }
+
+  // Compare the number (numerically)
+  if (parseInt(numA) !== parseInt(numB)) {
+    return parseInt(numA) - parseInt(numB);
+  }
+
+  // Compare the Roman numeral (converted to integer)
+  return romanToInt(romanA) - romanToInt(romanB);
+};
+
+
 const formatHeader = (key) => {
   return key
     .split('_')
@@ -25,18 +57,16 @@ const formatHeader = (key) => {
     .join(' ');
 };
 
-// Preprocess data to remove duplicates and apply natural sorting
 const preprocessData = (data) => {
   const allData = [];
   data.forEach(record => {
-    if (record.seat) {  // Ensure we're using the correct column name
+    if (record.seat) {  
       const existingRecord = allData.find(item => item.seat === record.seat);
       if (!existingRecord) {
         allData.push(record);
       }
     }
   });
-  // Sort data by the 'seat' field using natural sort
   allData.sort((a, b) => naturalSort(a.seat, b.seat));
   return allData;
 };
@@ -48,33 +78,37 @@ const Database_List = () => {
   const [selectedValue, setSelectedValue] = useState('');
   const [filteredData, setFilteredData] = useState([]);
   const [loading, setLoading] = useState(false);
+
+  const [currentPage, setCurrentPage] = useState(1); // New state for current page
+  const recordsPerPage = 100; // Set the number of records per page
   
   const printRef = useRef();
 
   useEffect(() => {
     const fetchData = async () => {
-      setLoading(true); // Ensure loading starts
+      setLoading(true); 
       try {
         const res = await axios.get('http://localhost:5000/data2');
         console.log('Fetched data:', res.data);
 
-        // Preprocess data to remove duplicates and apply natural sorting
         const processedData = res.data;
         const dataWithLevel = processedData.map((row) => ({
           ...row,
-          "Pro + Level+ std cat": (row.pro || 0) + " " + (row.level || 0)+" "+(row.std_cat),
+          "Pro + Level+ std cat": (row.pro || 0) + " " + (row.level || 0) + " " + (row.std_cat),
         }));
 
-        setTableData(dataWithLevel);
-        setFilteredData(processedData); // Initially, all data is displayed
+        const sortedData = dataWithLevel.sort((a, b) =>
+          naturalSort(a["Pro + Level+ std cat"], b["Pro + Level+ std cat"])
+        );
 
-        // Simulate a delay for the loader, but ensure the loading stops
-        // Adjust the delay as needed (in milliseconds)
+        setTableData(sortedData);
+        setFilteredData(sortedData); 
+
       } catch (err) {
         console.error('Error fetching data:', err);
-        setLoading(false); // Ensure loading stops even on error
+        setLoading(false);
       }
-      finally{
+      finally {
         setLoading(false); 
       }
     };
@@ -82,63 +116,82 @@ const Database_List = () => {
     fetchData();
   }, []);
 
-
-  // Handle column selection
   const handleColumnSelect = (e) => {
     const column = e.target.value;
     setSelectedColumn(column);
 
-    // Get unique values from the selected column
     const uniqueVals = [...new Set(tableData.map((row) => row[column]))];
     setUniqueValues(uniqueVals);
-    setSelectedValue(''); // Reset the selected value when a new column is chosen
-    setFilteredData(tableData); // Reset the table data when column changes
+    setSelectedValue(''); 
+    setFilteredData(tableData); 
   };
 
-  // Handle value selection
   const handleValueSelect = (e) => {
     const value = e.target.value;
     setSelectedValue(value);
-
-    // Filter table data based on the selected column and value
-    const filtered = tableData.filter((row) => String(row[selectedColumn]) === value);
+  
+    let filtered = tableData.filter((row) => String(row[selectedColumn]) === value);
+  
+    if (selectedColumn === "Pro + Level+ std cat" || selectedColumn === "centre_name") {
+      filtered = filtered.filter((row) => row.position !== "-");
+    }
+  
     setFilteredData(filtered);
+    setCurrentPage(1); 
   };
+  
 
-  // Export table data to Excel
   const exportToExcel = () => {
-    const worksheet = XLSX.utils.json_to_sheet(filteredData); // Convert filtered data to worksheet
-    const workbook = XLSX.utils.book_new(); // Create a new workbook
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'TableData'); // Append the worksheet
-    XLSX.writeFile(workbook, 'TableData.xlsx'); // Trigger download as 'TableData.xlsx'
+    const worksheet = XLSX.utils.json_to_sheet(filteredData); 
+    const workbook = XLSX.utils.book_new(); 
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'TableData'); 
+    XLSX.writeFile(workbook, 'TableData.xlsx'); 
   };
 
   const handlePrint = useReactToPrint({
-    content: () => printRef.current, // Print only the component wrapped with printRef
+    content: () => printRef.current, 
     documentTitle: 'Custom Table Report',
   });
+
+  // Pagination logic
+  const indexOfLastRecord = currentPage * recordsPerPage;
+  const indexOfFirstRecord = indexOfLastRecord - recordsPerPage;
+  const currentRecords = filteredData.slice(indexOfFirstRecord, indexOfLastRecord);
+
+  const totalPages = Math.ceil(filteredData.length / recordsPerPage);
+
+  const nextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const prevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
 
   return (
     <div className="container">
       <h2>FINAL RESULTS</h2>
 
       <div className="dropdown-container">
-        <div>
-          <label htmlFor="columnSelect">Select Column:</label>
-          <select
-            id="columnSelect"
-            value={selectedColumn}
-            onChange={handleColumnSelect}
-          >
-            <option value="">-- Select a column --</option>
-            {tableData.length > 0 &&
-              Object.keys(tableData[0]).map((key) => (
-                <option key={key} value={key}>
-                  {formatHeader(key)}
-                </option>
-              ))}
-          </select>
-        </div>
+      <div>
+        <label htmlFor="columnSelect">Select Column:</label>
+        <select
+          id="columnSelect"
+          value={selectedColumn}
+          onChange={handleColumnSelect}
+        >
+          <option value="">-- Select a column --</option>
+          {tableData.length > 0 && ["centre_name", "batch", "Pro + Level+ std cat", "position"].map((key) => (
+            <option key={key} value={key}>
+              {formatHeader(key)}
+            </option>
+          ))}
+        </select>
+      </div>
 
         {selectedColumn && (
           <div>
@@ -159,12 +212,12 @@ const Database_List = () => {
         )}
       </div>
 
-      {/* Export Button */}
+      {/* Export and Print Buttons */}
       <div >
           <button className="export-btn" onClick={exportToExcel}>
             Export to Excel
           </button>
-          <button className="print-btn" style={{marginLeft :"1190px"}}  onClick={handlePrint}>
+          <button className="print-btn" style={{marginLeft: "1190px"}} onClick={handlePrint}>
               Print Table
           </button>
       </div>
@@ -173,50 +226,48 @@ const Database_List = () => {
         <PrintTableComponent ref={printRef} filteredData={filteredData} />
       </div>
 
+      {/* Table */}
       <table className="table-container" border="1" cellPadding="10" cellSpacing="0">
         <thead>
           <tr>
-         
-            {filteredData.length > 0 &&
-              Object.keys(filteredData[0]).map((key) =>
-                key!=="Pro + Level" &&(
-                key === "position" ? (
-                  <>
-                    <th key={`${key}-pro-level`}>Pro + Level</th>
-                    <th key={key}>{formatHeader(key)}</th>
-                  </>
-                ) : (
-                  <th key={key}>{formatHeader(key)}</th>
-                ))
-              )}
+            {currentRecords.length > 0 &&
+              ["s_no", "name_of_students", "centre_name", "seat", "batch", "marks", "Pro + Level+ std cat"].map((key) => (
+                <th key={key}>{formatHeader(key)}</th>
+              ))
+            }
+            <th key="position">{formatHeader("position")}</th>
           </tr>
         </thead>
         <tbody>
-          {filteredData.map((row, index) => (
+          {currentRecords.map((row, index) => (
             <tr key={index}>
-              {Object.entries(row).map(([key, value], idx) =>
-                key==="s_no"?<td  style={{ color: "#FFA500" }}> {index + 1}</td>:
-                key === "position" ? (
-                  <>
-                    <td key={`${idx}-pro-level`} style={{ color: "#FFA500" }}>
-                      {row.pro} {row.level}
-                    </td>
-                    <td key={idx} style={{ color: "#FFA500" }}>
-                      {value}
-                    </td>
-                  </>
-                ) : (
-                  key !== "Pro + Level" && (
-                    <td key={idx} style={{ color: "#FFA500" }}>
-                      {value}
-                    </td>
-                  )
-                )
-              )}
+              {Object.entries(row)
+                .filter(([key]) => ["s_no", "name_of_students", "centre_name", "seat", "batch", "marks", "Pro + Level+ std cat"].includes(key))
+                .map(([key, value], idx) => (
+                  key === "s_no" ? 
+                    <td key={idx} style={{ color: "#FFA500" }}>{indexOfFirstRecord + index + 1}</td> :
+                    <td key={idx} style={{ color: "#FFA500" }}>{value}</td>
+                ))
+              }
+              <td style={{ color: "#FFA500" }}>{row.position}</td>
             </tr>
           ))}
         </tbody>
       </table>
+
+
+
+      <div className="pagination-controls">
+        <button onClick={prevPage} disabled={currentPage === 1}>
+          Previous
+        </button>
+        <span>
+          Page {currentPage} of {totalPages}
+        </span>
+        <button onClick={nextPage} disabled={currentPage === totalPages}>
+          Next
+        </button>
+      </div>
 
       {loading && (
         <div style={{

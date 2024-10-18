@@ -11,6 +11,7 @@ import FileUpload from './FileUpload';
 import UploadExcel from './Pages/UploadExcel';
 import Database_List from './Pages/Database_List';
 import MarkEntry from './Pages/MarkEntry';
+import ModifyPosition from './Pages/ModifyPosition';
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
             <Route path="level-wise-report" element={<LevelsReport/>}/>
             <Route path="result" element={<Database_List/>} />
             <Route path="upload" element={<UploadExcel/>} />
+            <Route path="modify-position" element={<ModifyPosition/>} />
           </Route>
         </Routes>
       </Router>

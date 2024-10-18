@@ -145,7 +145,6 @@ const MarkEntry = () => {
     <div className="containers">
       <h2>Student Marks Entry</h2>
 
-
       <div className="select-containers">
         <label>Select Batch: </label>
         <select

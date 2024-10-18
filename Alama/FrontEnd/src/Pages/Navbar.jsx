@@ -32,6 +32,9 @@ function Navbar() {
         <li className={location.pathname === '/dashboard/upload' ? 'active' : ''}>
           <Link to="/dashboard/upload">Upload</Link>
         </li>
+        <li className={location.pathname === '/dashboard/modify-position' ? 'active' : ''}>
+          <Link to="/dashboard/modify-position">Modify Position</Link>
+        </li>
       </ul>
       <button className='logout-button' onClick={handleClick}>Logout</button>
     </div>

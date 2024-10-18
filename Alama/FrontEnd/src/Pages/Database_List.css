@@ -190,3 +190,8 @@ tbody tr:hover {
   background-color: #bbb;   /* Gray color for disabled button */
   cursor: not-allowed;      /* No pointer cursor when disabled */
 }
+
+.pagination-controls{
+  display: inline;
+  padding-left: 44%;
+}
