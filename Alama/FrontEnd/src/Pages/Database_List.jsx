@@ -22,30 +22,26 @@ const romanToInt = (roman) => {
 };
 
 const naturalSort = (a, b) => {
-  // Split into 3 parts: prefix, number, and Roman numeral
   const regex = /^([A-Z]{2})\s+(\d+)\s+([IVXLCDM]+)$/;
   
   const matchA = a.match(regex);
   const matchB = b.match(regex);
 
   if (!matchA || !matchB) {
-    return 0; // If not matching, consider them equal
+    return 0; 
   }
 
   const [ , prefixA, numA, romanA] = matchA;
   const [ , prefixB, numB, romanB] = matchB;
 
-  // Compare the two-letter prefix (alphabetically)
   if (prefixA !== prefixB) {
     return prefixA.localeCompare(prefixB);
   }
 
-  // Compare the number (numerically)
   if (parseInt(numA) !== parseInt(numB)) {
     return parseInt(numA) - parseInt(numB);
   }
 
-  // Compare the Roman numeral (converted to integer)
   return romanToInt(romanA) - romanToInt(romanB);
 };
 
@@ -79,8 +75,8 @@ const Database_List = () => {
   const [filteredData, setFilteredData] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const [currentPage, setCurrentPage] = useState(1); // New state for current page
-  const recordsPerPage = 100; // Set the number of records per page
+  const [currentPage, setCurrentPage] = useState(1); 
+  const recordsPerPage = 100; 
   
   const printRef = useRef();
 
@@ -88,7 +84,7 @@ const Database_List = () => {
     const fetchData = async () => {
       setLoading(true); 
       try {
-        const res = await axios.get('http://localhost:5000/data2');
+        const res = await axios.get(`${import.meta.env.VITE_ALAMA_Competition_URL}/data2`);
         console.log('Fetched data:', res.data);
 
         const processedData = res.data;
@@ -153,7 +149,6 @@ const Database_List = () => {
     documentTitle: 'Custom Table Report',
   });
 
-  // Pagination logic
   const indexOfLastRecord = currentPage * recordsPerPage;
   const indexOfFirstRecord = indexOfLastRecord - recordsPerPage;
   const currentRecords = filteredData.slice(indexOfFirstRecord, indexOfLastRecord);
@@ -212,7 +207,6 @@ const Database_List = () => {
         )}
       </div>
 
-      {/* Export and Print Buttons */}
       <div >
           <button className="export-btn" onClick={exportToExcel}>
             Export to Excel
@@ -226,7 +220,6 @@ const Database_List = () => {
         <PrintTableComponent ref={printRef} filteredData={filteredData} />
       </div>
 
-      {/* Table */}
       <table className="table-container" border="1" cellPadding="10" cellSpacing="0">
         <thead>
           <tr>

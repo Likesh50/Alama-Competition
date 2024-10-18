@@ -43,7 +43,7 @@ const ModifyPosition = () => {
 
   useEffect(() => {
     setLoading(true);
-    axios.get('http://localhost:5000/data2')
+    axios.get(`${import.meta.env.VITE_ALAMA_Competition_URL}/data2`)
       .then(response => {
         setLoading(false);
         console.log('Fetched data:', response.data);
@@ -70,7 +70,7 @@ const ModifyPosition = () => {
   useEffect(() => {
     setLoading(true);
     if (selectedProLevelStdCat) {
-      axios.get('http://localhost:5000/data2') // Assuming the same endpoint returns all data
+      axios.get(`${import.meta.env.VITE_ALAMA_Competition_URL}/data2`) 
         .then(response => {
           setLoading(false);
           const filteredStudents = response.data.filter(student => 
@@ -106,7 +106,7 @@ const ModifyPosition = () => {
       position,
     }));
 
-    axios.post('http://localhost:5000/modifyPositions', { positionData: positionArray })
+    axios.post(`${import.meta.env.VITE_ALAMA_Competition_URL}/modifyPositions`, { positionData: positionArray })
       .then(response => {
         setLoading(false);
         setIsLoading(false);
@@ -118,7 +118,6 @@ const ModifyPosition = () => {
         setIsLoading(false);
         notifyfailure();
         console.error('Error updating positions:', error);
-        //console.log(positionArray);
       });
   };
 
@@ -154,14 +153,14 @@ const ModifyPosition = () => {
   <tbody>
     {students.map((student, index) => (
         <tr key={student.seat}>
-        <td>{index + 1}</td> {/* Serial number */}
+        <td>{index + 1}</td> 
         <td>{student.name_of_students}</td>
         <td>{student.marks}</td>
         <td>
         <select
-          value={positionData[student.seat] || student.position}  // Use student.seat as the key, show student.position as default
-          onChange={(e) => handlePositionChange(student.seat, e.target.value)}  // Track changes based on seat, modify position
-           // Use style prop for width
+          value={positionData[student.seat] || student.position} 
+          onChange={(e) => handlePositionChange(student.seat, e.target.value)}  
+          
         >
             <option value="winner">winner</option>
             <option value="runnerUp">runnerUp</option>
