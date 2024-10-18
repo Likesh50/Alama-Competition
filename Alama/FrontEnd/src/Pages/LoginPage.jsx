@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './LoginPage.css';
+import axios from 'axios';
 import logo from '../assets/logo.png';
 import { useNavigate } from 'react-router-dom';
 function LoginPage() {
@@ -11,11 +12,13 @@ function LoginPage() {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('/api/login', { username, password });
+      const response = await axios.post('http://localhost:5000/login', { username, password });
             const { token, role } = response.data;
-            localStorage.setItem('token', token);
+            window.sessionStorage.setItem('token', token);
+            window.sessionStorage.setItem('loginStatus', true);
+            window.sessionStorage.setItem('role',role);
             setRole(role);
-      navigate('/dashboard');
+            navigate('dashboard');
     } catch (err) {
       setError(err.message);
     }
