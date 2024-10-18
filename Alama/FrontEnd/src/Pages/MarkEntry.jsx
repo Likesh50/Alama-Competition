@@ -155,22 +155,22 @@ const MarkEntry = () => {
         <thead>
           <tr>
             
-            <th>Pro</th>
-            <th>Level</th>
-            <th>Seat</th>
-            <th>std</th>
-            <th>Marks</th>
+            <th style={{ width: '150px' }}>Pro</th>
+            <th style={{ width: '150px' }}>Level</th>
+            <th style={{ width: '150px' }}>Seat</th>
+            <th style={{ width: '150px' }}>std</th>
+            <th style={{ width: '150px' }}>Marks</th>
           </tr>
         </thead>
         <tbody>
           {students.map(student => (
             <tr key={student.seat}>
               
-              <td>{student.pro}</td>
-              <td>{student.level}</td>
-              <td>{student.seat}</td>
-              <td>{student.std_cat}</td>
-              <td>
+              <td style={{ width: '150px' }}>{student.pro}</td>
+              <td style={{ width: '150px' }}>{student.level}</td>
+              <td style={{ width: '150px' }}>{student.seat}</td>
+              <td style={{ width: '150px' }}>{student.std_cat}</td>
+              <td style={{ width: '150px' }}>
                 <input
                   type="text"
                   value={marksData[student.seat]}

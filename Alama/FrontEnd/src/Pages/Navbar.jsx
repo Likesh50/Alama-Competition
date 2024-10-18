@@ -8,7 +8,6 @@ function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
   const role=window.sessionStorage.getItem("role");
-  console.log("THEEE ROLE ISSS "+role);
   const handleClick = () => {
     window.sessionStorage.clear();
     navigate('/');
@@ -26,19 +25,22 @@ function Navbar() {
         <li className={location.pathname === '/dashboard' ? 'active' : ''}>
           <Link to="/dashboard">Home</Link>
         </li>
+
+        {role === "Entry" && (
         <li className={location.pathname === '/dashboard/mark-entry' ? 'active' : ''}>
           <Link to="/dashboard/mark-entry">Mark Entry</Link>
         </li>
+        )}
         {role !== "Entry" && (
       <>
+        <li className={location.pathname === '/dashboard/modify-position' ? 'active' : ''}>
+          <Link to="/dashboard/modify-position">Modify Position</Link>
+        </li>
         <li className={location.pathname === '/dashboard/result' ? 'active' : ''}>
           <Link to="/dashboard/result">Result</Link>
         </li>
         <li className={location.pathname === '/dashboard/upload' ? 'active' : ''}>
           <Link to="/dashboard/upload">Upload</Link>
-        </li>
-        <li className={location.pathname === '/dashboard/modify-position' ? 'active' : ''}>
-          <Link to="/dashboard/modify-position">Modify Position</Link>
         </li>
       </>
     )}
