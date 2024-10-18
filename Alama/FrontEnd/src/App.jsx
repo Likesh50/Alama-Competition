@@ -19,7 +19,7 @@
                     <Route
                         path="/dashboard"
                         element={
-                            <PrivateRoute allowedRoles={['Admin', 'Entry']}>
+                            <PrivateRoute allowedRoles={['Admin', 'Entry','Developer']}>
                                 <Layout />
                             </PrivateRoute>
                         }
@@ -28,7 +28,7 @@
                         <Route
                             path="signup"
                             element={
-                                <PrivateRoute allowedRoles={['Admin']}>
+                                <PrivateRoute allowedRoles={['Admin','Developer']}>
                                     <SignUp />
                                 </PrivateRoute>
                             }
@@ -36,7 +36,7 @@
                         <Route
                             path="mark-entry"
                             element={
-                                <PrivateRoute allowedRoles={['Admin', 'Entry']}>
+                                <PrivateRoute allowedRoles={['Admin', 'Entry','Developer']}>
                                     <MarkEntry />
                                 </PrivateRoute>
                             }
@@ -45,7 +45,7 @@
                         <Route
                             path="result"
                             element={
-                                <PrivateRoute allowedRoles={['Admin']}>
+                                <PrivateRoute allowedRoles={['Admin','Developer']}>
                                     <Database_List />
                                 </PrivateRoute>
                             }
@@ -53,7 +53,7 @@
                         <Route
                             path="upload"
                             element={
-                                <PrivateRoute allowedRoles={['Admin']}>
+                                <PrivateRoute allowedRoles={['Admin','Developer']}>
                                     <UploadExcel />
                                 </PrivateRoute>
                             }
@@ -61,7 +61,7 @@
                         <Route
                             path="modify-position"
                             element={
-                                <PrivateRoute allowedRoles={['Admin']}>
+                                <PrivateRoute allowedRoles={['Admin','Developer']}>
                                     <ModifyPosition />
                                 </PrivateRoute>
                             }
