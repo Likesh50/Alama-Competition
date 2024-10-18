@@ -8,18 +8,15 @@ const UploadExcel = () => {
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // Handle file selection
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
   };
 
-  // Handle file removal
   const handleFileRemove = () => {
     setFile(null);
     setMessage('');
   };
 
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -31,24 +28,21 @@ const UploadExcel = () => {
     const formData = new FormData();
     formData.append('file', file);
 
-    // Set loading to true when the process starts
     setLoading(true);
-    setMessage('');  // Clear any previous message
+    setMessage(''); 
 
     try {
-      const res = await axios.post('http://localhost:5000/upload', formData, {
+      const res = await axios.post(`${import.meta.env.VITE_ALAMA_Competition_URL}/upload`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
       
-      // Set message when the process completes
       setMessage(res.data);
     } catch (err) {
       console.error(err);
       setMessage('File upload failed.');
     } finally {
-      // Turn off loading after the process is complete
       setLoading(false);
     }
   };

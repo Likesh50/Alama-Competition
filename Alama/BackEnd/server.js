@@ -6,16 +6,14 @@ const cors = require('cors');
 const path = require('path');
 const bcrypt = require('bcrypt'); 
 const jwt = require('jsonwebtoken');
-// Initialize Express app
+
 const app = express();
 const PORT = 5000;
 
-// Enable CORS to allow React frontend access
 app.use(cors());
 app.use(express.json()); 
 
 
-// MySQL database connection
 const db = mysql.createConnection({
     host: 'localhost',
     user: 'root',
@@ -32,11 +30,9 @@ db.connect((err) => {
 });
 
 
-// Multer setup for file uploads
 const upload = multer({ dest: 'uploads/' });
 
 
-// Endpoint for file upload
 app.post('/upload', upload.single('file'), async (req, res) => {
   if (!req.file) {
       return res.status(400).send('No file uploaded');
@@ -44,16 +40,13 @@ app.post('/upload', upload.single('file'), async (req, res) => {
 
   const filePath = req.file.path;
 
-  // Read Excel file
   const workbook = xlsx.readFile(filePath);
   const sheet_name_list = workbook.SheetNames;
   const sheet = workbook.Sheets[sheet_name_list[0]];
   const excelData = xlsx.utils.sheet_to_json(sheet);
 
   try {
-      // Use Promise.all to wait for all insert/update operations to complete
       await Promise.all(excelData.map(async (row) => {
-          // Trim leading and trailing spaces from each property in the row
           Object.keys(row).forEach((key) => {
               if (typeof row[key] === 'string') {
                   row[key] = row[key].trim();
@@ -62,12 +55,10 @@ app.post('/upload', upload.single('file'), async (req, res) => {
 
           const seat = row.seat;
 
-          // Check if seat exists
           const checkQuery = 'SELECT * FROM students WHERE seat = ?';
           const [results] = await db.promise().query(checkQuery, [seat]);
 
           if (results.length > 0) {
-              // Update existing row
               const updateQuery = `
                   UPDATE students SET 
                   name_of_students = ?, centre_name = ?, pro = ?, level = ?, std_cat = ?, batch = ?, row_no = ?, roll_no = ?, marks = ?, position = ?
@@ -88,19 +79,171 @@ app.post('/upload', upload.single('file'), async (req, res) => {
                   seat,
               ]);
           } else {
-              // Insert new row
               const insertQuery = 'INSERT INTO students SET ?';
               await db.promise().query(insertQuery, row);
           }
       }));
 
-      // Send response only after all operations are done
       res.send('Data inserted/updated successfully');
   } catch (err) {
       console.error('Error processing data:', err);
       res.status(500).send('Error processing data');
   }
 });
+
+  app.post('/updatePositions', async (req, res) => {
+    console.log("Request received to update student marks and positions");
+  
+    const { marksData } = req.body;  
+  
+    try {
+      const updateMarksPromises = marksData.map(({ seat, marks }) => {
+        const parsedMarks = isNaN(parseInt(marks, 10)) ? 0 : parseInt(marks, 10);
+        const updateQuery = 'UPDATE students SET marks = ? WHERE seat = ?';
+        return db.promise().query(updateQuery, [parsedMarks, seat]);
+      });
+      await Promise.all(updateMarksPromises);
+  
+      const [students] = await db.promise().query(`
+        WITH RankedStudents AS (
+          SELECT 
+            seat,
+            marks,
+            pro,
+            level,
+            std_cat,
+            RANK() OVER (PARTITION BY pro, level, std_cat ORDER BY marks DESC) AS student_rank
+          FROM 
+            students
+        )
+        SELECT 
+          seat,
+          marks,
+          CASE 
+            WHEN student_rank <= 20 THEN 'winner'
+            WHEN student_rank > 20 AND student_rank <= 40 THEN 'runnerUp'
+            WHEN student_rank > 40 AND student_rank <= 60 THEN 'runner2' 
+            ELSE '-' 
+          END AS position
+        FROM 
+          RankedStudents
+        WHERE 
+          student_rank >= 0
+      `);
+  
+      const updatePositionsAndMarksPromises = students.map(student => {
+        const parsedMarks = isNaN(parseInt(student.marks, 10)) ? 0 : parseInt(student.marks, 10);
+        const updateQuery = 'UPDATE students SET position = ?, marks = ? WHERE seat = ?';
+        return db.promise().query(updateQuery, [student.position, parsedMarks, student.seat]);
+      });
+  
+      await Promise.all(updatePositionsAndMarksPromises);
+  
+      res.send('Student marks and positions updated successfully');
+    } catch (err) {
+      console.error('Error updating student marks and positions:', err);
+      res.status(500).send('Error updating student marks and positions');
+    }
+  });
+      
+    app.post('/updateMarks', async (req, res) => {
+    const { marksData } = req.body;
+    console.log("Request received");
+    console.log(marksData);
+  
+    try {
+      for (const { seat, marks } of marksData) {
+        const result = await db.promise().query('SELECT * FROM students WHERE seat = ?', [seat]);
+        if (result[0].length === 0) {
+          return res.status(404).send(`No student found with seat number: ${seat}`);
+        }
+        
+        const student = result[0][0];
+        const position = determineCategory(marks, student.pro + " " + student.level, student.std_cat);
+        
+        const updateQuery = 'UPDATE students SET marks = ?, position = ? WHERE seat = ?';
+        await db.promise().query(updateQuery, [marks, position, seat]);
+      }
+  
+      res.send('Marks updated successfully');
+    } catch (err) {
+      console.error('Error updating marks:', err);
+      res.status(500).send('Error updating marks');
+    }
+  });
+  
+
+app.get('/batches', async (req, res) => {
+    try {
+      const [batches] = await db.promise().query('SELECT DISTINCT batch FROM students');
+      res.json(batches.map(row => row.batch));
+    } catch (err) {
+      console.error('Error fetching batches:', err);
+      res.status(500).send('Error fetching batches');
+    }
+  });
+
+  
+  app.get('/data', async (req, res) => {
+    const batch = req.query.batch;
+    try {
+      const [students] = await db.promise().query('SELECT * FROM students WHERE batch = ?', [batch]);
+      res.json(students);
+    } catch (err) { 
+      console.error('Error fetching student data:', err);
+      res.status(500).send('Error fetching students');
+    }
+  });
+
+  app.post('/modifyPositions', async (req, res) => {
+    console.log(req.body);
+    const { positionData } = req.body;
+  
+    console.log('Received position data:', positionData); 
+  
+    if (!Array.isArray(positionData)) {
+      return res.status(400).send('Invalid data format');
+    }
+  
+    try {
+      const query = `UPDATE students SET position = ? WHERE seat = ?`;
+      for (let record of positionData) {
+        console.log(`Updating seat ${record.seat} with position ${record.position}`);
+        await db.execute(query, [record.position, record.seat]);
+      }
+      res.send('Positions updated successfully');
+    } catch (error) {
+      console.error('Error updating positions:', error);
+      res.status(500).send('Error updating positions');
+    }
+  });
+  
+  
+  app.get('/data2', (req, res) => {
+    const query = `
+    SELECT *
+    FROM students
+    ORDER BY 
+        CASE 
+            WHEN position = 'winner' THEN 1
+            WHEN position = 'runnerUp' THEN 2
+            WHEN position = 'runner2' THEN 3
+            ELSE 4  
+        END,
+    marks DESC
+
+    `;
+        console.log("Hello");
+        db.query(query, (err, results) => {
+            if (err) {
+                console.error('Error fetching data:', err);
+                res.status(500).send('Error fetching data');
+            } else {
+                res.json(results);
+            }
+        });
+    });
+
 
 const determineCategory = (marks, level, grade) => {
     // Define the mark ranges and corresponding categories
@@ -713,5 +856,6 @@ app.post('/signup', (req, res) => {
 });
 
 app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+    console.log("You r up!!!");
 });
+

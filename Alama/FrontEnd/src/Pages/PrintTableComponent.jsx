@@ -3,7 +3,6 @@ import './PrintTableComponent.css';
 import logo from '../assets/logo.png';
 
 const PrintTableComponent = React.forwardRef(({ filteredData }, ref) => {
-  // Columns to exclude
   const columnsToInclude = ['s_no','name_of_students', 'centre_name', 'Pro + Level', 'seat', 'position'];
 
   return (
@@ -17,7 +16,6 @@ const PrintTableComponent = React.forwardRef(({ filteredData }, ref) => {
         <hr />
       </div>
 
-      {/* Table Content */}
       <table className="print-table" border="1" cellPadding="10" cellSpacing="0" style={{ marginTop: "20px" }}>
         <thead>
           <tr>

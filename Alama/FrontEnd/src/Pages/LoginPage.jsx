@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
-import { signInWithEmailAndPassword } from 'firebase/auth';
 import './LoginPage.css';
 import axios from 'axios';
 import logo from '../assets/logo.png';
-import { auth } from '../firebase';
 import { useNavigate } from 'react-router-dom';
 function LoginPage() {
   const [username, setUsername] = useState("");

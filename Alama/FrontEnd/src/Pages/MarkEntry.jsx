@@ -4,7 +4,7 @@ import './MarkEntry.css';
 import { HashLoader } from 'react-spinners';
 import { ToastContainer, toast, Zoom } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-// Natural sorting function
+
 const naturalSort = (a, b) => {
   const splitA = a.split('-').map(Number);
   const splitB = b.split('-').map(Number);
@@ -15,18 +15,16 @@ const naturalSort = (a, b) => {
   return 0;
 };
 
-// Preprocess data to remove duplicates and apply natural sorting
 const preprocessData = (data) => {
   const allData = [];
   data.forEach(record => {
-    if (record.seat) {  // Ensure we're using the correct column name
+    if (record.seat) {  
       const existingRecord = allData.find(item => item.seat === record.seat);
       if (!existingRecord) {
         allData.push(record);
       }
     }
   });
-  // Sort data by the 'seat' field using natural sort
   allData.sort((a, b) => naturalSort(a.seat, b.seat));
   return allData;
 };
@@ -34,8 +32,8 @@ const preprocessData = (data) => {
 const MarkEntry = () => {
   const [students, setStudents] = useState([]);
   const [marksData, setMarksData] = useState([]);
-  const [batches, setBatches] = useState([]); // To store available batches
-  const [selectedBatch, setSelectedBatch] = useState(''); // To track the selected batch
+  const [batches, setBatches] = useState([]); 
+  const [selectedBatch, setSelectedBatch] = useState(''); 
   const [isLoading, setIsLoading] = useState(false);
   const [completionMessage, setCompletionMessage] = useState('');
   const [loading, setLoading] = useState(false);
@@ -68,14 +66,13 @@ const MarkEntry = () => {
     });
   };
   useEffect(() => {
-    // Fetch all available batches
     setLoading(true);
-    axios.get('http://localhost:5000/batches')
+    axios.get(`${import.meta.env.VITE_ALAMA_Competition_URL}/batches`)
       .then(response => {
         setLoading(false);
         setBatches(response.data);
         if (response.data.length > 0) {
-          setSelectedBatch(response.data[0]); // Set default batch selection to first batch
+          setSelectedBatch(response.data[0]);
         }
       })
       .catch(error => {
@@ -88,8 +85,7 @@ const MarkEntry = () => {
   useEffect(() => {
     setLoading(true);
     if (selectedBatch) {
-      // Fetch student data based on the selected batch
-      axios.get(`http://localhost:5000/data?batch=${selectedBatch}`)
+      axios.get(`${import.meta.env.VITE_ALAMA_Competition_URL}/data?batch=${selectedBatch}`)
         .then(response => {
           setLoading(false);
           const sortedStudents = preprocessData(response.data);
@@ -120,13 +116,12 @@ const MarkEntry = () => {
     setLoading(true);
     setCompletionMessage('');
   
-    // Convert marksData object to an array of { seat, marks }
     const marksArray = Object.entries(marksData).map(([seat, marks]) => ({
       seat,
       marks,
     }));
   
-    axios.post('http://localhost:5000/updatePositions', { marksData: marksArray })
+    axios.post(`${import.meta.env.VITE_ALAMA_Competition_URL}/updatePositions`, { marksData: marksArray })
       .then(response => {
         setLoading(false);
         setIsLoading(false);
