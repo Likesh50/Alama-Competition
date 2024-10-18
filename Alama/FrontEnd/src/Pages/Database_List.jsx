@@ -85,7 +85,6 @@ const Database_List = () => {
       setLoading(true); 
       try {
         const res = await axios.get(`${import.meta.env.VITE_ALAMA_Competition_URL}/data2`);
-        console.log('Fetched data:', res.data);
 
         const processedData = res.data;
         const dataWithLevel = processedData.map((row) => ({
@@ -101,7 +100,6 @@ const Database_List = () => {
         setFilteredData(sortedData); 
 
       } catch (err) {
-        console.error('Error fetching data:', err);
         setLoading(false);
       }
       finally {

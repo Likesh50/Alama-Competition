@@ -77,7 +77,6 @@ const MarkEntry = () => {
       })
       .catch(error => {
         setLoading(false);
-        console.error('Error fetching batches:', error);
       }
     );
   }, []);
@@ -99,7 +98,6 @@ const MarkEntry = () => {
         })
         .catch(error => {
           setLoading(false);
-          console.error('Error fetching student data:', error);
         });
     }
   }, [selectedBatch]);
@@ -132,7 +130,6 @@ const MarkEntry = () => {
         setLoading(false);
         setIsLoading(false);
         setCompletionMessage('Error updating marks. Please try again.');
-        console.error('Error updating marks:', error);
       });
   };
   

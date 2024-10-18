@@ -4,10 +4,6 @@
   import Dashboard from './Pages/Dashboard';
   import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
   import Layout from './Pages/Layout';
-  import Result from './Pages/Result';
-  import LevelsReport from './Pages/LevelsReport';
-  import useFetchData from './Pages/useFetchData';
-  import FileUpload from './FileUpload';
   import UploadExcel from './Pages/UploadExcel';
   import Database_List from './Pages/Database_List';
   import MarkEntry from './Pages/MarkEntry';
@@ -45,14 +41,7 @@
                                 </PrivateRoute>
                             }
                         />
-                        <Route
-                            path="level-wise-report"
-                            element={
-                                <PrivateRoute allowedRoles={['Admin']}>
-                                    <LevelsReport />
-                                </PrivateRoute>
-                            }
-                        />
+                        
                         <Route
                             path="result"
                             element={

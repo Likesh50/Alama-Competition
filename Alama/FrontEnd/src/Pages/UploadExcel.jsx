@@ -40,7 +40,6 @@ const UploadExcel = () => {
       
       setMessage(res.data);
     } catch (err) {
-      console.error(err);
       setMessage('File upload failed.');
     } finally {
       setLoading(false);

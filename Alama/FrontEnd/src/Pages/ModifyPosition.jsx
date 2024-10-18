@@ -46,7 +46,6 @@ const ModifyPosition = () => {
     axios.get(`${import.meta.env.VITE_ALAMA_Competition_URL}/data2`)
       .then(response => {
         setLoading(false);
-        console.log('Fetched data:', response.data);
 
         const processedData = response.data;
         const dataWithLevel = processedData.map((row) => ({
@@ -63,7 +62,6 @@ const ModifyPosition = () => {
       })
       .catch(error => {
         setLoading(false);
-        console.error('Error fetching data2:', error);
       });
   }, []);
 
@@ -85,7 +83,6 @@ const ModifyPosition = () => {
         })
         .catch(error => {
           setLoading(false);
-          console.error('Error fetching student data:', error);
         });
     }
   }, [selectedProLevelStdCat]);
@@ -117,7 +114,6 @@ const ModifyPosition = () => {
         setLoading(false);
         setIsLoading(false);
         notifyfailure();
-        console.error('Error updating positions:', error);
       });
   };
 

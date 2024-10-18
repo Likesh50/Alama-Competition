@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import './SignUpPage.css'; // Import the custom CSS file
+import './SignUpPage.css'; 
 import axios from "axios";
 import logo from './assets/logo.png';
 import { useNavigate } from 'react-router-dom';
@@ -15,7 +15,7 @@ const SignUp = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch('http://localhost:5000/signup', {
+      const response = await fetch(`${import.meta.env.VITE_ALAMA_Competition_URL}/signup`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -33,14 +33,13 @@ const SignUp = () => {
         throw new Error(data.message || 'Error signing up');
       }
 
-      // Clear form on success
       setEmail('');
       setPassword('');
       setRole('');
       setError('');
 
       alert('User created successfully!');
-      navigate('/dashboard'); // Navigate to dashboard after successful sign up
+      navigate('/dashboard');
     } catch (err) {
       setError(err.message);
     }
