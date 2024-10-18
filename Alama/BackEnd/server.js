@@ -23,9 +23,9 @@ const db = mysql.createConnection({
 
 db.connect((err) => {
     if (err) {
-        console.error('Database connection error:', err);
+        
     } else {
-        console.log('Connected to MySQL Database');
+        
     }
 });
 
@@ -86,13 +86,11 @@ app.post('/upload', upload.single('file'), async (req, res) => {
 
       res.send('Data inserted/updated successfully');
   } catch (err) {
-      console.error('Error processing data:', err);
       res.status(500).send('Error processing data');
   }
 });
 
   app.post('/updatePositions', async (req, res) => {
-    console.log("Request received to update student marks and positions");
   
     const { marksData } = req.body;  
   
@@ -141,15 +139,12 @@ app.post('/upload', upload.single('file'), async (req, res) => {
   
       res.send('Student marks and positions updated successfully');
     } catch (err) {
-      console.error('Error updating student marks and positions:', err);
       res.status(500).send('Error updating student marks and positions');
     }
   });
       
     app.post('/updateMarks', async (req, res) => {
     const { marksData } = req.body;
-    console.log("Request received");
-    console.log(marksData);
   
     try {
       for (const { seat, marks } of marksData) {
@@ -167,7 +162,6 @@ app.post('/upload', upload.single('file'), async (req, res) => {
   
       res.send('Marks updated successfully');
     } catch (err) {
-      console.error('Error updating marks:', err);
       res.status(500).send('Error updating marks');
     }
   });
@@ -178,7 +172,6 @@ app.get('/batches', async (req, res) => {
       const [batches] = await db.promise().query('SELECT DISTINCT batch FROM students');
       res.json(batches.map(row => row.batch));
     } catch (err) {
-      console.error('Error fetching batches:', err);
       res.status(500).send('Error fetching batches');
     }
   });
@@ -190,16 +183,13 @@ app.get('/batches', async (req, res) => {
       const [students] = await db.promise().query('SELECT * FROM students WHERE batch = ?', [batch]);
       res.json(students);
     } catch (err) { 
-      console.error('Error fetching student data:', err);
       res.status(500).send('Error fetching students');
     }
   });
 
   app.post('/modifyPositions', async (req, res) => {
-    console.log(req.body);
     const { positionData } = req.body;
   
-    console.log('Received position data:', positionData); 
   
     if (!Array.isArray(positionData)) {
       return res.status(400).send('Invalid data format');
@@ -208,12 +198,10 @@ app.get('/batches', async (req, res) => {
     try {
       const query = `UPDATE students SET position = ? WHERE seat = ?`;
       for (let record of positionData) {
-        console.log(`Updating seat ${record.seat} with position ${record.position}`);
         await db.execute(query, [record.position, record.seat]);
       }
       res.send('Positions updated successfully');
     } catch (error) {
-      console.error('Error updating positions:', error);
       res.status(500).send('Error updating positions');
     }
   });
@@ -233,10 +221,8 @@ app.get('/batches', async (req, res) => {
     marks DESC
 
     `;
-        console.log("Hello");
         db.query(query, (err, results) => {
             if (err) {
-                console.error('Error fetching data:', err);
                 res.status(500).send('Error fetching data');
             } else {
                 res.json(results);
