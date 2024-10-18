@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import './LoginPage.css';
+import axios from 'axios';
 import logo from '../assets/logo.png';
 import { auth } from '../firebase';
 import { useNavigate } from 'react-router-dom';
@@ -13,13 +14,13 @@ function LoginPage() {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('/api/login', { username, password });
+      const response = await axios.post('http://localhost:5000/login', { username, password });
             const { token, role } = response.data;
-
-            // Store token and role in local storage or context
-            localStorage.setItem('token', token);
+            window.sessionStorage.setItem('token', token);
+            window.sessionStorage.setItem('loginStatus', true);
+            window.sessionStorage.setItem('role',role);
             setRole(role);
-      navigate('/dashboard');
+            navigate('dashboard');
     } catch (err) {
       setError(err.message);
     }

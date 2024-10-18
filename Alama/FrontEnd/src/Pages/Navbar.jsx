@@ -3,12 +3,15 @@ import './Navbar.css';
 import logo from '../assets/logo.png';
 import { Link, useLocation } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
+
 function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
-  
+  const role=window.sessionStorage.getItem("role");
+  console.log("THEEE ROLE ISSS "+role);
   const handleClick = () => {
-    navigate("/");
+    window.sessionStorage.clear();
+    navigate('/');
   }
 
   const handleImage=()=>{
@@ -26,6 +29,8 @@ function Navbar() {
         <li className={location.pathname === '/dashboard/mark-entry' ? 'active' : ''}>
           <Link to="/dashboard/mark-entry">Mark Entry</Link>
         </li>
+        {role !== "Entry" && (
+      <>
         <li className={location.pathname === '/dashboard/result' ? 'active' : ''}>
           <Link to="/dashboard/result">Result</Link>
         </li>
@@ -35,6 +40,8 @@ function Navbar() {
         <li className={location.pathname === '/dashboard/modify-position' ? 'active' : ''}>
           <Link to="/dashboard/modify-position">Modify Position</Link>
         </li>
+      </>
+    )}
       </ul>
       <button className='logout-button' onClick={handleClick}>Logout</button>
     </div>

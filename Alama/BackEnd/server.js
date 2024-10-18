@@ -19,8 +19,8 @@ app.use(express.json());
 const db = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    password: '1207', // Change this
-    database: 'alama' // Change this
+    password: 'pass123', 
+    database: 'alama'
 });
 
 db.connect((err) => {
@@ -498,7 +498,6 @@ const determineCategory = (marks, level, grade) => {
       }
     };
   
-    // Check if the level and grade exist in the categories
     if (levelGradeCategories[level] && levelGradeCategories[level][grade]) {
       for (const { range, category } of levelGradeCategories[level][grade]) {
         if (marks >= range[0] && marks <= range[1]) {
@@ -661,6 +660,58 @@ app.get('/batches', async (req, res) => {
         });
     });
 // Start the server
+const JWT_SECRET="alamacomp";
+app.post('/login', (req, res) => {
+  const { username, password } = req.body;
+  db.query('SELECT * FROM users WHERE uname = ?', [username], (err, result) => {
+    if (err) {
+      return res.status(500).json({ message: 'Database error', err });
+    }
+
+    if (result.length === 0) {
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
+
+    const user = result[0];
+
+    bcrypt.compare(password, user.pass, (err, isMatch) => {
+      if (!isMatch) {
+        return res.status(401).json({ message: 'Invalid credentials' });
+      }
+
+
+      const token = jwt.sign({ id: user.id, role: user.role,uname:user.uname }, JWT_SECRET, { expiresIn: '1h' });
+      return res.json({ token, role: user.role,uname:user.uname });
+    });
+  });
+});
+
+
+app.post('/signup', (req, res) => {
+  const { username, password, role } = req.body;
+
+
+  db.query('SELECT * FROM users WHERE uname = ?', [username], (err, result) => {
+    if (err) {
+      return res.status(500).json({ message: 'Database error', err });
+    }
+
+    if (result.length > 0) {
+      return res.status(400).json({ message: 'Username already exists' });
+    }
+
+    const hashedPassword = bcrypt.hashSync(password, 10);
+
+    db.query('INSERT INTO users (uname, pass, role) VALUES (?, ?, ?)', [username, hashedPassword, role], (err, result) => {
+      if (err) {
+        return res.status(500).json({ message: 'Error inserting user', err });
+      }
+
+      return res.status(201).json({ message: 'User created', role });
+    });
+  });
+});
+
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });
