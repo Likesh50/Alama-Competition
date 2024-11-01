@@ -30,6 +30,9 @@ db.connect((err) => {
 });
 
 
+app.get('/', (req, res) => {
+  res.send('Hello, World! Your server is working.');
+});
 
 const upload = multer({ dest: 'uploads/' });
 
