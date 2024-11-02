@@ -74,7 +74,7 @@ const Database_List = () => {
   const [selectedValue, setSelectedValue] = useState('');
   const [filteredData, setFilteredData] = useState([]);
   const [loading, setLoading] = useState(false);
-
+  const [calculating, setCalculating] = useState(false);
   const [currentPage, setCurrentPage] = useState(1); 
   const recordsPerPage = 100; 
   
@@ -111,7 +111,18 @@ const Database_List = () => {
 
     fetchData();
   }, []);
-
+  const handleCalculateResults = async () => {
+    setCalculating(true); // Set calculating to true to show loading state
+    try {
+      const response = await axios.post(`${import.meta.env.VITE_ALAMA_Competition_URL}/calculatePositions`);
+      console.log('Calculation result:', response.data);
+      // Optionally, handle the response to update your state or UI as needed
+    } catch (error) {
+      console.error('Error calculating positions:', error);
+    } finally {
+      setCalculating(false); // Reset the calculating state
+    }
+  };
   const handleColumnSelect = (e) => {
     const column = e.target.value;
     setSelectedColumn(column);
@@ -170,7 +181,11 @@ const Database_List = () => {
   return (
     <div className="container">
       <h2>FINAL RESULTS</h2>
-
+      <div>
+        <button className="calculate-btn" onClick={handleCalculateResults} disabled={calculating}>
+          {calculating ? 'Calculating...' : 'Calculate Results'}
+        </button>
+      </div>
       <div className="dropdown-container">
       <div>
         <label htmlFor="columnSelect">Select Column:</label>
