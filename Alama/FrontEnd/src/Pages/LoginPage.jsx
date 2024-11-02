@@ -12,7 +12,7 @@ function LoginPage() {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5000/login', { username, password });
+      const response = await axios.post(`${import.meta.env.VITE_ALAMA_Competition_URL}/login`, { username, password });
             const { token, role } = response.data;
             window.sessionStorage.setItem('token', token);
             window.sessionStorage.setItem('loginStatus', true);

@@ -10,85 +10,87 @@ const jwt = require('jsonwebtoken');
 const app = express();
 const PORT = 5000;
 
-app.use(cors());
-app.use(express.json()); 
-
+app.use(cors()); 
+app.use(express.json({ limit: '10mb' })); 
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 const db = mysql.createConnection({
     host: 'localhost',
-    user: 'root',
+    user: 'developer',
     password: 'pass123', 
     database: 'alama'
 });
 
 db.connect((err) => {
-    if (err) {
-        
-    } else {
-        
-    }
+  if (err) {
+      console.error('Database connection failed:', err); 
+  } else {
+      console.log('Connected to the database'); 
+  }
 });
 
+
+app.get('/', (req, res) => {
+  res.send('Hello, World! Your server is working.');
+});
 
 const upload = multer({ dest: 'uploads/' });
 
 
-app.post('/upload', upload.single('file'), async (req, res) => {
-  if (!req.file) {
-      return res.status(400).send('No file uploaded');
+app.post('/upload', async (req, res) => {
+  const excelData = req.body.data; 
+
+  if (!excelData || !Array.isArray(excelData)) {
+    return res.status(400).send('Invalid or missing data');
   }
-
-  const filePath = req.file.path;
-
-  const workbook = xlsx.readFile(filePath);
-  const sheet_name_list = workbook.SheetNames;
-  const sheet = workbook.Sheets[sheet_name_list[0]];
-  const excelData = xlsx.utils.sheet_to_json(sheet);
 
   try {
-      await Promise.all(excelData.map(async (row) => {
-          Object.keys(row).forEach((key) => {
-              if (typeof row[key] === 'string') {
-                  row[key] = row[key].trim();
-              }
-          });
+    await Promise.all(excelData.map(async (row) => {
+      Object.keys(row).forEach((key) => {
+        if (typeof row[key] === 'string') {
+          row[key] = row[key].trim();
+        }
+      });
 
-          const seat = row.seat;
+      const marks = isNaN(row.marks) ? 0 : Number(row.marks);
+      row.marks = marks;
 
-          const checkQuery = 'SELECT * FROM students WHERE seat = ?';
-          const [results] = await db.promise().query(checkQuery, [seat]);
+      const seat = row.seat;
 
-          if (results.length > 0) {
-              const updateQuery = `
-                  UPDATE students SET 
-                  name_of_students = ?, centre_name = ?, pro = ?, level = ?, std_cat = ?, batch = ?, row_no = ?, roll_no = ?, marks = ?, position = ?
-                  WHERE seat = ?
-              `;
+      const checkQuery = 'SELECT * FROM students WHERE seat = ?';
+      const [results] = await db.promise().query(checkQuery, [seat]);
 
-              await db.promise().query(updateQuery, [
-                  row.name_of_students,
-                  row.centre_name,
-                  row.pro,
-                  row.level,
-                  row.std_cat,
-                  row.batch,
-                  row.row_no,
-                  row.roll_no,
-                  row.marks,
-                  row.position,
-                  seat,
-              ]);
-          } else {
-              const insertQuery = 'INSERT INTO students SET ?';
-              await db.promise().query(insertQuery, row);
-          }
-      }));
+      if (results.length > 0) {
+        const updateQuery = `
+          UPDATE students SET 
+          name_of_students = ?, centre_name = ?, pro = ?, level = ?, std_cat = ?, batch = ?, row_no = ?, roll_no = ?, marks = ?, position = ?
+          WHERE seat = ?
+        `;
+        await db.promise().query(updateQuery, [
+          row.name_of_students,
+          row.centre_name,
+          row.pro,
+          row.level,
+          row.std_cat,
+          row.batch,
+          row.row_no,
+          row.roll_no,
+          row.marks,
+          row.position,
+          seat,
+        ]);
+      } else {
+        const insertQuery = 'INSERT INTO students SET ?';
+        await db.promise().query(insertQuery, row);
+      }
+    }));
 
-      res.send('Data inserted/updated successfully');
+    res.send('Data inserted/updated successfully');
   } catch (err) {
-      res.status(500).send('Error processing data');
+    res.status(500).send('Internal Server Error');
   }
 });
+
 
   app.post('/updatePositions', async (req, res) => {
   
@@ -165,6 +167,18 @@ app.post('/upload', upload.single('file'), async (req, res) => {
       res.status(500).send('Error updating marks');
     }
   });
+
+app.delete('/students', async (req, res) => {
+  try {
+    const deleteQuery = 'DELETE FROM students';
+    await db.promise().query(deleteQuery);
+    res.send('All records deleted successfully');
+  } catch (err) {
+    console.error('Error deleting records:', err);
+    res.status(500).send('Error deleting records');
+  }
+});
+
   
 
 app.get('/batches', async (req, res) => {
@@ -228,6 +242,29 @@ app.get('/batches', async (req, res) => {
                 res.json(results);
             }
         });
+    });
+
+    app.get('/count', async (req, res) => {
+      try {
+        const [result] = await db.promise().query('SELECT COUNT(*) AS count FROM students');
+        const count = result[0].count;
+        res.json({ count });
+      } catch (error) {
+        console.error('Error fetching count:', error.message); // Log the error message
+        console.error(error); // Log the full error object for more details
+        res.status(500).json({ error: 'Failed to fetch student count' });
+      }
+    });
+    
+
+    app.delete('/students', async (req, res) => {
+      try {
+        await db.query('DELETE FROM students');
+        
+        res.json({ message: 'All records deleted successfully' });
+      } catch (error) {
+        res.status(500).json({ error: 'Failed to delete student records' });
+      }
     });
 
 

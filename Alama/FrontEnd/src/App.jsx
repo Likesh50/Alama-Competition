@@ -36,7 +36,7 @@
                         <Route
                             path="mark-entry"
                             element={
-                                <PrivateRoute allowedRoles={['Admin', 'Entry','Developer']}>
+                                <PrivateRoute allowedRoles={['Entry','Developer']}>
                                     <MarkEntry />
                                 </PrivateRoute>
                             }

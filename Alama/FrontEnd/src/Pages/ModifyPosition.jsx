@@ -46,7 +46,6 @@ const ModifyPosition = () => {
     axios.get(`${import.meta.env.VITE_ALAMA_Competition_URL}/data2`)
       .then(response => {
         setLoading(false);
-        console.log('Fetched data:', response.data);
 
         const processedData = response.data;
         const dataWithLevel = processedData.map((row) => ({
@@ -63,7 +62,6 @@ const ModifyPosition = () => {
       })
       .catch(error => {
         setLoading(false);
-        console.error('Error fetching data2:', error);
       });
   }, []);
 
@@ -85,7 +83,6 @@ const ModifyPosition = () => {
         })
         .catch(error => {
           setLoading(false);
-          console.error('Error fetching student data:', error);
         });
     }
   }, [selectedProLevelStdCat]);
@@ -117,7 +114,6 @@ const ModifyPosition = () => {
         setLoading(false);
         setIsLoading(false);
         notifyfailure();
-        console.error('Error updating positions:', error);
       });
   };
 
@@ -143,20 +139,19 @@ const ModifyPosition = () => {
       <table>
   <thead>
       <tr>
-      <th>S NO</th>
-      <th>Name</th>
-      <th>Seat</th>
-      
-      <th>Modified Position</th>
+      <th style={{ width: '150px' }}>S NO</th>
+      <th style={{ width: '150px' }}>Name</th>
+      <th style={{ width: '150px' }}>Seat</th>
+      <th style={{ width: '150px' }}>Modified Position</th>
       </tr>
   </thead>
   <tbody>
     {students.map((student, index) => (
         <tr key={student.seat}>
-        <td>{index + 1}</td> 
-        <td>{student.name_of_students}</td>
-        <td>{student.marks}</td>
-        <td>
+        <td style={{ width: '150px' }}>{index + 1}</td> 
+        <td style={{ width: '150px' }}>{student.name_of_students}</td>
+        <td style={{ width: '150px' }}>{student.marks}</td>
+        <td style={{ width: '150px' }}>
         <select
           value={positionData[student.seat] || student.position} 
           onChange={(e) => handlePositionChange(student.seat, e.target.value)}  
@@ -176,7 +171,7 @@ const ModifyPosition = () => {
 
 
 
-      <button onClick={updatePositions} disabled={isLoading}>Update Positions</button>
+      <button onClick={updatePositions} disabled={isLoading} style={{marginLeft:"45%"}}>Update Positions</button>
 
       {loading && (
         <div style={{
