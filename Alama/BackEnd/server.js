@@ -16,8 +16,8 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 const db = mysql.createConnection({
     host: 'localhost',
-    user: 'developer',
-    password: 'pass123', 
+    user: 'root',
+    password: '1207', 
     database: 'alama'
 });
 
