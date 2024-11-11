@@ -11,7 +11,11 @@ import ModifyPosition from './Pages/ModifyPosition';
 import SignUp from './SignUp';
 import PrivateRoute from './Pages/PrivateRoute';
 
+import DataPage from './Pages/DataPage';
 function App() {
+
+  const role=window.sessionStorage.getItem("role");
+
   return (
     <div className='app'>
       <Router>
@@ -21,12 +25,19 @@ function App() {
           <Route
             path="/dashboard"
             element={
-              <PrivateRoute allowedRoles={['Admin', 'Entry', 'Developer']}>
+              <PrivateRoute allowedRoles={['Admin', 'Entry', 'Developer','Center']}>
                 <Layout />
+              
               </PrivateRoute>
             }
           >
-            <Route path="" element={<Dashboard />} />
+            <Route
+              path=""
+              element={
+                role === 'Center' ?  <DataPage/>: <Dashboard />
+              }
+            />
+
             <Route
               path="mark-entry"
               element={
@@ -59,6 +70,12 @@ function App() {
                 </PrivateRoute>
               }
             />
+            
+            <Route
+              path="data"
+              element={<DataPage/>}
+            />
+
           </Route>
         </Routes>
       </Router>

@@ -10,9 +10,26 @@ const jwt = require('jsonwebtoken');
 const app = express();
 const PORT = 5000;
 
-app.use(cors()); 
+app.use(cors({
+  origin: 'http://www.alamatn.in', // allow this specific origin
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // specify allowed methods
+  allowedHeaders: ['Content-Type', 'Authorization'], // specify allowed headers
+  credentials: true // enable cookies and credentials if necessary
+}));
 app.use(express.json({ limit: '10mb' })); 
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', 'http://www.alamatn.in');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  next();
+});
+
+app.options('*', cors({
+  origin: 'http://www.alamatn.in',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
 
 // const db = mysql.createConnection({
 //     host: 'localhost',
@@ -24,7 +41,7 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 const db = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    password: 'pass123', 
+    password: '1207', 
     database: 'alama'
 });
 db.connect((err) => {
@@ -682,7 +699,7 @@ const determineCategory = (marks, level, grade) => {
   };
   const centers=[
     {
-      "name": "ALAMA PALLIKONDA",
+      "name": "ALAMA - PALLIKONDA",
       "strength": 10,
       "champion": 0,
       "winner": 1,
@@ -699,10 +716,10 @@ const determineCategory = (marks, level, grade) => {
     },
     {
       "name": "ALAMA-SAINATHAPURAM",
-      "strength": 17,
+      "strength": 19,
       "champion": 2,
       "winner": 3,
-      "runner": 3,
+      "runner": 4,
       "runner_1": 4
     },
     {
@@ -715,7 +732,7 @@ const determineCategory = (marks, level, grade) => {
     },
     {
       "name": "DESIA SAINATHAPURAM",
-      "strength": 47,
+      "strength": 46,
       "champion": 2,
       "winner": 5,
       "runner": 10,
@@ -730,12 +747,12 @@ const determineCategory = (marks, level, grade) => {
       "runner_1": 20
     },
     {
-      "name": "HOLY CROSS MAT HR SEC SCHOOL (VELLORE)",
-      "strength": 120,
+      "name": "HOLY CROSS MAT HR SEC SCHOOL(VELLORE)",
+      "strength": 122,
       "champion": 4,
       "winner": 12,
       "runner": 22,
-      "runner_1": 32
+      "runner_1": 33
     },
     {
       "name": "HOLY CROSS MATRIC HR.SEC.SCHOOL- DINIGUL",
@@ -770,15 +787,15 @@ const determineCategory = (marks, level, grade) => {
       "runner_1": 2
     },
     {
-      "name": "OTOMATIKS ACTIVITY CENTER (VELLORE)",
-      "strength": 15,
+      "name": "OTOMATIKS ACTIVITY CENTER(VELLORE)",
+      "strength": 16,
       "champion": 1,
       "winner": 2,
       "runner": 3,
       "runner_1": 4
     },
     {
-      "name": "RATHINAGIRI BAGEERATHAN Metric.Hr Sec SCHOOL",
+      "name": "RATHINAGIRI BAGEERATHAN  Metric.Hr Sec SCHOOL",
       "strength": 123,
       "champion": 4,
       "winner": 13,
@@ -786,7 +803,7 @@ const determineCategory = (marks, level, grade) => {
       "runner_1": 33
     },
     {
-      "name": "SAI KRISHNA N & P SCHOOL",
+      "name": "SAI  KRISHNA N & P SCHOOL",
       "strength": 27,
       "champion": 1,
       "winner": 2,
@@ -795,11 +812,11 @@ const determineCategory = (marks, level, grade) => {
     },
     {
       "name": "SARVESH ACADEMY",
-      "strength": 14,
+      "strength": 16,
       "champion": 1,
       "winner": 2,
       "runner": 2,
-      "runner_1": 4
+      "runner_1": 5
     },
     {
       "name": "SNEHA DEEPAM MATRIC HR SEC SCHOOL",
@@ -819,11 +836,11 @@ const determineCategory = (marks, level, grade) => {
     },
     {
       "name": "SRI NARAYANI VIDYALAYA",
-      "strength": 180,
+      "strength": 182,
       "champion": 5,
       "winner": 20,
       "runner": 32,
-      "runner_1": 54
+      "runner_1": 55
     },
     {
       "name": "SRI NARAYANI VIDYASHRAM SR.SEC.SCHOOL",
@@ -850,7 +867,7 @@ const determineCategory = (marks, level, grade) => {
       "runner_1": 3
     },
     {
-      "name": "VALLALAR",
+      "name": "ALAMA-VALLALAR",
       "strength": 24,
       "champion": 1,
       "winner": 3,
@@ -875,7 +892,7 @@ const determineCategory = (marks, level, grade) => {
     },
     {
       "name": "VVNKM SR SEC SCHOOL (CBSE)",
-      "strength": 65,
+      "strength": 64,
       "champion": 2,
       "winner": 7,
       "runner": 13,
@@ -889,7 +906,7 @@ const determineCategory = (marks, level, grade) => {
       "runner_1": 13
   },
   {
-      "name": "ALAMA LALAPET",
+      "name": "ALAMA- LALAPET",
       "strength": 18,
       "champion": 1,
       "winner": 2,
@@ -897,7 +914,7 @@ const determineCategory = (marks, level, grade) => {
       "runner_1": 4
   },
   {
-      "name": "ALAMA THIMIRI",
+      "name": "ALAMA- THIMIRI",
       "strength": 35,
       "champion": 1,
       "winner": 3,
@@ -905,7 +922,7 @@ const determineCategory = (marks, level, grade) => {
       "runner_1": 8
   },
   {
-      "name": "ALAMA TIRUPATTUR",
+      "name": "C S I  SCHOOL",
       "strength": 6,
       "champion": 0,
       "winner": 1,
@@ -921,7 +938,7 @@ const determineCategory = (marks, level, grade) => {
       "runner_1": 8
   },
   {
-      "name": "ANICHAM ACADEMY",
+      "name": "ANICHAM ACADEMY ",
       "strength": 3,
       "champion": 0,
       "winner": 0,
@@ -937,7 +954,7 @@ const determineCategory = (marks, level, grade) => {
       "runner_1": 4
   },
   {
-      "name": "ARCOT TALENT CENTRE",
+      "name": "ARCOT TALENT CENTER",
       "strength": 19,
       "champion": 1,
       "winner": 2,
@@ -953,7 +970,7 @@ const determineCategory = (marks, level, grade) => {
       "runner_1": 3
   },
   {
-      "name": "ASHIRWAD INTERNATIONAL CBSE SCHOOL",
+      "name": "ASHIRWAD INTERNATIONAL CBSE SCHOOL.",
       "strength": 42,
       "champion": 1,
       "winner": 5,
@@ -961,7 +978,7 @@ const determineCategory = (marks, level, grade) => {
       "runner_1": 11
   },
   {
-      "name": "AYYAN EDUCATION CENTRE",
+      "name": "AYYAN EDUCATION  CENTRE ",
       "strength": 63,
       "champion": 2,
       "winner": 8,
@@ -969,7 +986,7 @@ const determineCategory = (marks, level, grade) => {
       "runner_1": 18
   },
   {
-      "name": "BHEL RANIPET",
+      "name": "ALAMA-BHEL RANIPET",
       "strength": 34,
       "champion": 2,
       "winner": 4,
@@ -978,14 +995,14 @@ const determineCategory = (marks, level, grade) => {
   },
   {
       "name": "BRUNDAVAN ENGLISH MEDIUM SCHOOL",
-      "strength": 62,
+      "strength": 64,
       "champion": 1,
       "winner": 8,
       "runner": 10,
-      "runner_1": 15
+      "runner_1": 16
   },
   {
-      "name": "G.VARADHARAJALU CHETTIAR Hr. Sec. SCHOOL (E M)",
+      "name": "G.VARADHARAJALU CHETTIAR Hr. Sec. SCHOOL   (E M)",
       "strength": 46,
       "champion": 1,
       "winner": 5,
@@ -993,7 +1010,7 @@ const determineCategory = (marks, level, grade) => {
       "runner_1": 11
   },
   {
-      "name": "G.VARADHARAJALU CHETTIAR Hr. Sec SCHOOL (T M)",
+      "name": "G.VARADHARAJALU CHETTIAR Hr. Sec SCHOOL  (T M)",
       "strength": 30,
       "champion": 1,
       "winner": 3,
@@ -1002,7 +1019,7 @@ const determineCategory = (marks, level, grade) => {
   },
   {
       "name": "HINDU VIDHYALAYA CBSE SCHOOL",
-      "strength": 79,
+      "strength": 80,
       "champion": 2,
       "winner": 9,
       "runner": 14,
@@ -1021,7 +1038,7 @@ const determineCategory = (marks, level, grade) => {
       "strength": 13,
       "champion": 0,
       "winner": 1,
-      "runner": 2,
+      "runner": 3,
       "runner_1": 3
   },
   {
@@ -1089,7 +1106,7 @@ const determineCategory = (marks, level, grade) => {
     "runner_1": 36
 },
 {
-    "name": "QUEEN MARRYS P&N SCHOOL",
+    "name": "QUEEN MARRYS  P&N SCHOOL",
     "strength": 26,
     "champion": 1,
     "winner": 2,
@@ -1106,7 +1123,7 @@ const determineCategory = (marks, level, grade) => {
 },
 {
     "name": "RAMAKRISHNA SCHOOL (KANNAMANGALAM)",
-    "strength": 26,
+    "strength": 27,
     "champion": 2,
     "winner": 4,
     "runner": 5,
@@ -1114,11 +1131,11 @@ const determineCategory = (marks, level, grade) => {
 },
 {
     "name": "REWOD NURSERY AND PRIMRY SCHOOL",
-    "strength": 18,
+    "strength": 17,
     "champion": 1,
     "winner": 2,
     "runner": 3,
-    "runner_1": 4
+    "runner_1": 3
 },
 {
     "name": "RISHI SCHOOL",
@@ -1153,7 +1170,7 @@ const determineCategory = (marks, level, grade) => {
     "runner_1": 2
 },
 {
-    "name": "SREE SAI ACADEMY",
+    "name": "SREE SAI ACADEMY (CHITTOOR)",
     "strength": 7,
     "champion": 0,
     "winner": 1,
@@ -1273,7 +1290,7 @@ const determineCategory = (marks, level, grade) => {
     "runner_1": 4
 },
 {
-    "name": "ALAMA AMBUR",
+    "name": "ALAMA - AMBUR",
     "strength": 36,
     "champion": 1,
     "winner": 5,
@@ -1289,7 +1306,7 @@ const determineCategory = (marks, level, grade) => {
   "runner_1": 32
 },
 {
-  "name": "BLOSSOM ACTIVITY CENTRE",
+  "name": "BLOSSOM ACTIVITY CENTRE ",
   "strength": 11,
   "champion": 1,
   "winner": 2,
@@ -1305,7 +1322,7 @@ const determineCategory = (marks, level, grade) => {
   "runner_1": 2
 },
 {
-  "name": "OTOMATIKS ACTIVITY CENTER (CHENNAI)",
+  "name": "OTOMATIKS ACTIVITY CENTER(CHENNAI)",
   "strength": 6,
   "champion": 1,
   "winner": 1,
@@ -1313,7 +1330,7 @@ const determineCategory = (marks, level, grade) => {
   "runner_1": 1
 },
 {
-  "name": "SAI VIKETHA ACADEMY",
+  "name": "SAI VIKETHA ACADEMY (POLUR)",
   "strength": 15,
   "champion": 1,
   "winner": 2,
@@ -1321,7 +1338,7 @@ const determineCategory = (marks, level, grade) => {
   "runner_1": 4
 },
 {
-  "name": "SRIPERUMBADUR",
+  "name": "ALAMA -SRIPERUMBADUR",
   "strength": 16,
   "champion": 1,
   "winner": 2,
@@ -1337,7 +1354,7 @@ const determineCategory = (marks, level, grade) => {
   "runner_1": 11
 },
 {
-  "name": "THE ASHRAM SCHOOL",
+  "name": "THE ASHRAM SCHOOL ",
   "strength": 12,
   "champion": 1,
   "winner": 2,
@@ -1345,12 +1362,20 @@ const determineCategory = (marks, level, grade) => {
   "runner_1": 2
 },
 {
-  "name": "TINDIVANAM",
+  "name": "ALAMA-TINDIVANAM",
   "strength": 17,
   "champion": 1,
   "winner": 3,
   "runner": 3,
   "runner_1": 4
+},
+{
+  "name": "GRACE MHSS, RANIPET",
+  "strength": 42,
+  "champion": 1,
+  "winner": 4,
+  "runner": 8,
+  "runner_1": 9
 },
 {
   "name": "AIMS CBSE SCHOOL",
@@ -1386,7 +1411,7 @@ const determineCategory = (marks, level, grade) => {
 app.post('/calculatePositions', async (req, res) => {
   try {
       // Fetch students from the database
-      const [students] = await db.promise().query('SELECT seat, marks, centre_name FROM students');
+      const [students] = await db.promise().query('SELECT seat, marks, centre_name FROM students WHERE marks > 20');
 
       // Group students by center
       const groupedStudents = centers.reduce((acc, center) => {
@@ -1567,6 +1592,22 @@ app.get('/batches', async (req, res) => {
   
   app.get('/data2', (req, res) => {
     const query = `SELECT * 
+    FROM students 
+    ORDER BY 
+        marks DESC    
+    `;
+        console.log("Hello");
+        db.query(query, (err, results) => {
+            if (err) {
+                console.error('Error fetching data:', err);
+                res.status(500).send('Error fetching data');
+            } else {
+                res.json(results);
+            }
+        });
+    });
+  app.get('/data3', (req, res) => {
+    const query = `SELECT s_no,name_of_students,centre_name,seat,position 
     FROM students 
     ORDER BY 
         marks DESC    

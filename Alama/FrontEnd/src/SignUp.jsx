@@ -82,6 +82,7 @@ const SignUp = () => {
               <option value="Admin">Admin</option>
               <option value="Entry">Entry</option>
               <option value="Developer">Developer</option>
+              <option value="Center">Center</option>
             </select>
           </div>
           <button onClick={handleSignUp} className="signup-button">Sign Up</button>

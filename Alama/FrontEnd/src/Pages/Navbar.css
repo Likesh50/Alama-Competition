@@ -7,10 +7,10 @@
   position: fixed;
   width: 100vw;
   background-color: #f7f7f7;
-    top: 0;
-    left: 0;
-    width: 100%;
-    z-index: 1000;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  flex-wrap: nowrap; /* Ensures navbar stays in a single row */
 }
 
 .logo img {
@@ -27,26 +27,26 @@
 }
 
 .nav-links li {
-  margin: 0 15px; /* Space between links */
+  margin: 0 15px;
 }
 
 .nav-links a {
-  color: #708090; /* Text color */
+  color: #708090;
   font-weight: 500;
   text-decoration: none;
   font-size: 20px;
   padding: 5px 10px;
   border-radius: 5px;
-  transition: background-color 0.3s, color 0.3s; /* Smooth transition */
+  transition: background-color 0.3s, color 0.3s;
 }
 
 .nav-links a:hover {
-  background-color: #f0f0f0; /* Light background on hover */
+  background-color: #f0f0f0;
 }
 
 .nav-links .active a {
-  color: #501960; /* Active link text color */
-  border-bottom: 2px solid #d3844f; /* Underline for active link */
+  color: #501960;
+  border-bottom: 2px solid #d3844f;
 }
 
 .logout-button {
@@ -71,4 +71,35 @@
 .logout-button:active {
   background-color: #e53e4d;
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+  .navbar {
+    justify-content: space-between;
+    padding: 10px 15px;
+  }
+
+  .logo img {
+    height: 40px;
+  }
+
+  .nav-links {
+    display: flex;
+    flex-grow: 1;
+    justify-content: center;
+  }
+
+  .nav-links li {
+    margin: 0 10px;
+  }
+
+  .logout-button {
+    margin-top: 0;
+  }
+
+  /* Mobile menu button (optional) */
+  .menu-button {
+    display: none; /* Hide menu button on larger screens */
+  }
 }
