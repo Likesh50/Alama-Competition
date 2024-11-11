@@ -40,8 +40,8 @@ app.options('*', cors({
 
 const db = mysql.createConnection({
     host: 'localhost',
-    user: 'root',
-    password: '1207', 
+    user: 'developer',
+    password: 'pass123', 
     database: 'alama'
 });
 db.connect((err) => {
