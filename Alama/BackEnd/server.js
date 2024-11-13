@@ -14,19 +14,23 @@ app.use(cors());
 app.use(express.json({ limit: '10mb' })); 
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-const db = mysql.createConnection({
+const db = mysql.createPool({
   host: 'srv1639.hstgr.io',
   user: 'u347524458_developer',
   password: 'Alamatn@24', 
-  database: 'u347524458_alamatn'
+  database: 'u347524458_alamatn',
+  waitForConnections: true,
+  connectionLimit: 100,  // Adjust this value based on your app's expected traffic
+  queueLimit: 0
 });
 
-
-db.connect((err) => {
+// Test the pool connection
+db.getConnection((err, connection) => {
   if (err) {
-      console.error('Database connection failed:', err); 
+    console.error('Database connection failed:', err);
   } else {
-      console.log('Connected to the database'); 
+    console.log('Connected to the database');
+    connection.release(); // Release the connection back to the pool
   }
 });
 
