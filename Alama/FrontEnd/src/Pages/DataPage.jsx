@@ -24,7 +24,7 @@ const DataPage = () => {
         );
 
         setTableData(sortedData);
-        setFilteredData(sortedData.filter(row => row.position !== '-'));
+        setFilteredData(sortedData.filter(row => row.position !== '-' && row.position !== null));
 
         const uniqueCenters = [...new Set(sortedData.map(item => item.centre_name))];
         setUniqueCenters(uniqueCenters);
@@ -43,7 +43,7 @@ const DataPage = () => {
     setSelectedCenter(center);
     setFilteredData(
       tableData
-        .filter(row => row.position !== '-')
+        .filter(row => row.position !== '-' && row.position !== null)
         .filter(row => row.centre_name === center)
     );
     setCurrentPage(1);
@@ -87,17 +87,19 @@ const DataPage = () => {
             <tr>
               <th>S. No.</th>
               <th>Name of Students</th>
+              <th>Position</th>
               <th>Centre Name</th>
               <th>Seat</th>
-              <th>Position</th>
+              
             </tr>
             {currentRecords.map((row, index) => (
               <tr key={index}>
                 <td style={{ color: "#FFA500" }}>{indexOfFirstRecord + index + 1}</td>
                 <td style={{ color: "#FFA500" }}>{row.name_of_students}</td>
+                <td style={{ color: "#FFA500" }}>{row.position}</td>
                 <td style={{ color: "#FFA500" }}>{row.centre_name}</td>
                 <td style={{ color: "#FFA500" }}>{row.seat}</td>
-                <td style={{ color: "#FFA500" }}>{row.position}</td>
+                
               </tr>
             ))}
           </tbody>
