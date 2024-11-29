@@ -147,6 +147,7 @@ button:disabled {
     align-items: center;
     justify-content: center;
     margin-bottom: 20px;
+    
 }
   
 .select-container label {
@@ -167,7 +168,7 @@ button:disabled {
     background-color: #f9f9f9;
     color: #2c3e50;
     cursor: pointer;
-    width: 100px;
+    min-width: 200px;
 }
   
 /* Add a subtle shadow to the dropdown */
@@ -187,3 +188,60 @@ button:disabled {
     background-color: #fff;
     color: #2c3e50;
 }
+
+.search-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 20px 0;
+  }
+  
+  .search-container label {
+    font-size: 1rem;
+    font-weight: bold;
+    margin-right: 10px;
+    color: #333;
+  }
+  
+  .search-container input {
+    padding: 8px 12px;
+    font-size: 1rem;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+    width: 200px;
+    outline: none;
+    transition: border-color 0.3s ease;
+  }
+  
+  .search-container input:focus {
+    border-color: #501960;
+    box-shadow: 0 0 5px rgba(80, 25, 96, 0.5);
+  }
+  
+  .search-container button {
+    padding: 8px 16px;
+    font-size: 1rem;
+    font-weight: bold;
+    color: #fff;
+    background-color: #501960;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-left: 10px;
+    margin-top:-0px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+  
+  .search-container button:hover {
+    background-color: #7a3085;
+  }
+  
+  .search-container button:active {
+    transform: scale(0.95);
+  }
+  
+  .search-container button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+  

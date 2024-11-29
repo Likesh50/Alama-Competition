@@ -118,6 +118,7 @@ const Database_List = () => {
     } catch (error) {
       console.error('Error calculating positions:', error);
     } finally {
+      window.location.reload();
       setCalculating(false); // Reset the calculating state
     }
   };
@@ -137,8 +138,8 @@ const Database_List = () => {
   
     let filtered = tableData.filter((row) => String(row[selectedColumn]) === value);
   
-    if (selectedColumn === "centre_name") {
-      filtered = filtered.filter((row) => row.position !== null && row.position !== "");
+    if (selectedColumn === "centre_name"  || selectedColumn === "Pro + Level+ std cat" ||selectedColumn === "batch") {
+      filtered = filtered.filter((row) => row.position !== null && row.position !== "" && row.position !== "-");
     }
   
     setFilteredData(filtered);
@@ -288,6 +289,21 @@ const Database_List = () => {
           backgroundColor: 'rgba(255, 255, 255, 0.7)',
         }}>
           <HashLoader color="#501960" loading={loading} size={90} />
+        </div>
+      )}
+      {calculating && (
+        <div style={{
+          position: 'fixed',
+          top: '0',
+          left: '0',
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: 'rgba(255, 255, 255, 0.7)',
+        }}>
+          <HashLoader color="#501960" loading={calculating} size={90} />
         </div>
       )}
     </div>

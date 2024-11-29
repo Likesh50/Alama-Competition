@@ -10,6 +10,7 @@ const ModifyPosition = () => {
   const [positionData, setPositionData] = useState({});
   const [proLevelStdCatOptions, setProLevelStdCatOptions] = useState([]); 
   const [selectedProLevelStdCat, setSelectedProLevelStdCat] = useState('');
+  const [seatNumber, setSeatNumber] = useState(''); // New state for seat number input
   const [isLoading, setIsLoading] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -41,6 +42,7 @@ const ModifyPosition = () => {
     });
   };
 
+  // Fetch data for dropdown
   useEffect(() => {
     setLoading(true);
     axios.get(`${import.meta.env.VITE_ALAMA_Competition_URL}/data2`)
@@ -65,6 +67,7 @@ const ModifyPosition = () => {
       });
   }, []);
 
+  // Fetch data based on dropdown selection
   useEffect(() => {
     setLoading(true);
     if (selectedProLevelStdCat) {
@@ -86,6 +89,36 @@ const ModifyPosition = () => {
         });
     }
   }, [selectedProLevelStdCat]);
+
+  // Handle search by seat number
+  const searchBySeatNumber = () => {
+    if (seatNumber) {
+      setLoading(true);
+      axios.get(`${import.meta.env.VITE_ALAMA_Competition_URL}/data2/seat/${seatNumber}`)
+        .then(response => {
+          setLoading(false);
+          const student = response.data;
+          setStudents([student]); // Render only the matched student
+          setPositionData({ [student.seat]: student.position || '-' });
+        })
+        .catch(error => {
+          setLoading(false);
+          if (error.response && error.response.status === 404) {
+            toast.error('No student found with the given seat number', {
+              position: "top-center",
+              autoClose: 3000,
+              theme: "colored",
+            });
+          } else {
+            toast.error('Error fetching student data', {
+              position: "top-center",
+              autoClose: 3000,
+              theme: "colored",
+            });
+          }
+        });
+    }
+  };
 
   const handlePositionChange = (seat, value) => {
     setPositionData(prevState => ({
@@ -126,7 +159,7 @@ const ModifyPosition = () => {
         <select
           value={selectedProLevelStdCat}
           onChange={(e) => setSelectedProLevelStdCat(e.target.value)}
-          style={{width:"130px"}}
+          style={{ width: "130px" }}
         >
           {proLevelStdCatOptions.map((option, index) => (
             <option key={index} value={option}>{option}</option>
@@ -134,44 +167,53 @@ const ModifyPosition = () => {
         </select>
       </div>
 
+      <div className="search-container">
+        <label>Search by Seat Number: </label>
+        <input 
+          type="text" 
+          value={seatNumber} 
+          onChange={(e) => setSeatNumber(e.target.value)} 
+          placeholder="Enter seat number"
+          style={{ width: "150px", marginRight: "10px" }}
+        />
+        <button onClick={searchBySeatNumber}>Search</button>
+      </div>
+
       {isLoading ? <p>Updating positions...</p> : null}
 
       <table>
-  <thead>
-      <tr>
-      <th style={{ width: '150px' }}>S NO</th>
-      <th style={{ width: '150px' }}>Name</th>
-      <th style={{ width: '150px' }}>Seat</th>
-      <th style={{ width: '150px' }}>Modified Position</th>
-      </tr>
-  </thead>
-  <tbody>
-    {students.map((student, index) => (
-        <tr key={student.seat}>
-        <td style={{ width: '150px' }}>{index + 1}</td> 
-        <td style={{ width: '150px' }}>{student.name_of_students}</td>
-        <td style={{ width: '150px' }}>{student.marks}</td>
-        <td style={{ width: '150px' }}>
-        <select
-          value={positionData[student.seat] || student.position} 
-          onChange={(e) => handlePositionChange(student.seat, e.target.value)}  
-          
-        >
-            <option value="winner">winner</option>
-            <option value="runnerUp">runnerUp</option>
-            <option value="runner2">runner2</option>
-            <option value="-">-</option>
-            </select>
-        </td>
-        </tr>
-    ))}
-    </tbody>
+        <thead>
+          <tr>
+            <th style={{ width: '150px' }}>S NO</th>
+            <th style={{ width: '150px' }}>Name</th>
+            <th style={{ width: '150px' }}>Seat</th>
+            <th style={{ width: '150px' }}>Modified Position</th>
+          </tr>
+        </thead>
+        <tbody>
+          {students.map((student, index) => (
+            <tr key={student.seat}>
+              <td style={{ width: '150px' }}>{index + 1}</td>
+              <td style={{ width: '150px' }}>{student.name_of_students}</td>
+              <td style={{ width: '150px' }}>{student.seat}</td>
+              <td style={{ width: '150px' }}>
+                <select
+                  value={positionData[student.seat] || student.position} 
+                  onChange={(e) => handlePositionChange(student.seat, e.target.value)}  
+                >
+                  <option value="champion">Champion</option>
+                  <option value="winner">winner</option>
+                  <option value="runnerUp">runnerUp</option>
+                  <option value="runner2">runner2</option>
+                  <option value="-">-</option>
+                </select>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
 
-</table>
-
-
-
-      <button onClick={updatePositions} disabled={isLoading} style={{marginLeft:"45%"}}>Update Positions</button>
+      <button onClick={updatePositions} disabled={isLoading} style={{ marginLeft: "45%" }}>Update Positions</button>
 
       {loading && (
         <div style={{

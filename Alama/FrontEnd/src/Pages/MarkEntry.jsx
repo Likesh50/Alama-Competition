@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import './MarkEntry.css';
 import { HashLoader } from 'react-spinners';
@@ -18,7 +18,7 @@ const naturalSort = (a, b) => {
 const preprocessData = (data) => {
   const allData = [];
   data.forEach(record => {
-    if (record.seat) {  
+    if (record.seat) {
       const existingRecord = allData.find(item => item.seat === record.seat);
       if (!existingRecord) {
         allData.push(record);
@@ -32,12 +32,13 @@ const preprocessData = (data) => {
 const MarkEntry = () => {
   const [students, setStudents] = useState([]);
   const [marksData, setMarksData] = useState([]);
-  const [batches, setBatches] = useState([]); 
-  const [selectedBatch, setSelectedBatch] = useState(''); 
+  const [batches, setBatches] = useState([]);
+  const [selectedBatch, setSelectedBatch] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [completionMessage, setCompletionMessage] = useState('');
   const [loading, setLoading] = useState(false);
-  
+  const inputRefs = useRef([]);
+
   const notifysuccess = () => {
     toast.success('Updated Marks Successfully!', {
       position: "top-center",
@@ -65,6 +66,7 @@ const MarkEntry = () => {
       transition: Zoom,
     });
   };
+
   useEffect(() => {
     setLoading(true);
     axios.get(`${import.meta.env.VITE_ALAMA_Competition_URL}/batches`)
@@ -77,8 +79,7 @@ const MarkEntry = () => {
       })
       .catch(error => {
         setLoading(false);
-      }
-    );
+      });
   }, []);
 
   useEffect(() => {
@@ -94,7 +95,6 @@ const MarkEntry = () => {
             initialMarks[student.seat] = student.marks || '';
           });
           setMarksData(initialMarks);
-          console.log(sortedStudents);
         })
         .catch(error => {
           setLoading(false);
@@ -109,16 +109,26 @@ const MarkEntry = () => {
     }));
   };
 
+  const handleKeyDown = (e, index) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const nextIndex = index + 1;
+      if (inputRefs.current[nextIndex]) {
+        inputRefs.current[nextIndex].focus();
+      }
+    }
+  };
+
   const updateMarks = () => {
     setIsLoading(true);
     setLoading(true);
     setCompletionMessage('');
-  
+
     const marksArray = Object.entries(marksData).map(([seat, marks]) => ({
       seat,
       marks,
     }));
-  
+
     axios.post(`${import.meta.env.VITE_ALAMA_Competition_URL}/updatePositions`, { marksData: marksArray })
       .then(response => {
         setLoading(false);
@@ -132,7 +142,7 @@ const MarkEntry = () => {
         setCompletionMessage('Error updating marks. Please try again.');
       });
   };
-  
+
   return (
     <div className="containers">
       <h2>Student Marks Entry</h2>
@@ -154,7 +164,6 @@ const MarkEntry = () => {
       <table>
         <thead>
           <tr>
-            
             <th style={{ width: '150px' }}>Pro</th>
             <th style={{ width: '150px' }}>Level</th>
             <th style={{ width: '150px' }}>Seat</th>
@@ -163,9 +172,8 @@ const MarkEntry = () => {
           </tr>
         </thead>
         <tbody>
-          {students.map(student => (
+          {students.map((student, index) => (
             <tr key={student.seat}>
-              
               <td style={{ width: '150px' }}>{student.pro}</td>
               <td style={{ width: '150px' }}>{student.level}</td>
               <td style={{ width: '150px' }}>{student.seat}</td>
@@ -175,6 +183,8 @@ const MarkEntry = () => {
                   type="text"
                   value={marksData[student.seat]}
                   onChange={(e) => handleMarkChange(student.seat, e.target.value)}
+                  onKeyDown={(e) => handleKeyDown(e, index)}
+                  ref={(el) => (inputRefs.current[index] = el)}
                 />
               </td>
             </tr>
@@ -182,7 +192,7 @@ const MarkEntry = () => {
         </tbody>
       </table>
 
-      <button onClick={updateMarks} style={{marginLeft:"710px"}} disabled={isLoading}>Update Marks</button>
+      <button onClick={updateMarks} style={{ marginLeft: "710px" }} disabled={isLoading}>Update Marks</button>
 
       {loading && (
         <div style={{

@@ -20,7 +20,7 @@ const db = mysql.createPool({
   password: 'Alamatn@24', 
   database: 'u347524458_alamatn',
   waitForConnections: true,
-  connectionLimit: 100,  // Adjust this value based on your app's expected traffic
+  connectionLimit: 50,  // Adjust this value based on your app's expected traffic
   queueLimit: 0
 });
 
@@ -50,48 +50,63 @@ app.post('/upload', async (req, res) => {
   }
 
   try {
-    await Promise.all(excelData.map(async (row) => {
-      Object.keys(row).forEach((key) => {
-        if (typeof row[key] === 'string') {
-          row[key] = row[key].trim();
+    // Use a transaction for batch processing
+    await db.promise().getConnection().then(async (connection) => {
+      await connection.beginTransaction();
+
+      try {
+        for (const row of excelData) {
+          Object.keys(row).forEach((key) => {
+            if (typeof row[key] === 'string') {
+              row[key] = row[key].trim();
+            }
+          });
+
+          const marks = isNaN(row.marks) ? 0 : Number(row.marks);
+          row.marks = marks;
+
+          const seat = row.seat;
+
+          const checkQuery = 'SELECT * FROM students WHERE seat = ?';
+          const [results] = await connection.query(checkQuery, [seat]);
+
+          if (results.length > 0) {
+            const updateQuery = `
+              UPDATE students SET 
+              name_of_students = ?, centre_name = ?, pro = ?, level = ?, std_cat = ?, batch = ?, row_no = ?, roll_no = ?, marks = ?, position = ?
+              WHERE seat = ?
+            `;
+            await connection.query(updateQuery, [
+              row.name_of_students,
+              row.centre_name,
+              row.pro,
+              row.level,
+              row.std_cat,
+              row.batch,
+              row.row_no,
+              row.roll_no,
+              row.marks,
+              "-",
+              seat,
+            ]);
+          } else {
+            const insertQuery = 'INSERT INTO students SET ?';
+            await connection.query(insertQuery, row);
+          }
         }
-      });
 
-      const marks = isNaN(row.marks) ? 0 : Number(row.marks);
-      row.marks = marks;
-
-      const seat = row.seat;
-
-      const checkQuery = 'SELECT * FROM students WHERE seat = ?';
-      const [results] = await db.promise().query(checkQuery, [seat]);
-
-      if (results.length > 0) {
-        const updateQuery = `
-          UPDATE students SET 
-          name_of_students = ?, centre_name = ?, pro = ?, level = ?, std_cat = ?, batch = ?, row_no = ?, roll_no = ?, marks = ?, position = ?
-          WHERE seat = ?
-        `;
-        await db.promise().query(updateQuery, [
-          row.name_of_students,
-          row.centre_name,
-          row.pro,
-          row.level,
-          row.std_cat,
-          row.batch,
-          row.row_no,
-          row.roll_no,
-          row.marks,
-          row.position,
-          seat,
-        ]);
-      } else {
-        const insertQuery = 'INSERT INTO students SET ?';
-        await db.promise().query(insertQuery, row);
+        await connection.commit();
+        res.send('Data inserted/updated successfully');
+      } catch (error) {
+        await connection.rollback();
+        console.error('Transaction error:', error);
+        res.status(500).send('Internal Server Error');
+      } finally {
+        connection.release(); // Always release the connection back to the pool
       }
-    }));
-
-    res.send('Data inserted/updated successfully');
+    });
   } catch (err) {
+    console.error('Database connection error:', err);
     res.status(500).send('Internal Server Error');
   }
 });
@@ -249,6 +264,25 @@ app.get('/batches', async (req, res) => {
             }
         });
     });
+
+    app.get('/data2/seat/:seat', (req, res) => {
+      const { seat } = req.params;
+      const query = `
+      SELECT *
+      FROM students
+      WHERE seat = ?
+      `;
+      db.query(query, [seat], (err, results) => {
+          if (err) {
+              res.status(500).send('Error fetching data');
+          } else if (results.length === 0) {
+              res.status(404).send('No student found with the given seat number');
+          } else {
+              res.json(results[0]);
+          }
+      });
+  });
+  
 
     app.get('/count', async (req, res) => {
       try {
@@ -922,7 +956,7 @@ const determineCategory = (marks, level, grade) => {
       "runner_1": 8
   },
   {
-      "name": "ANICHAM ACADEMY ",
+      "name": "ANICHAM ACADEMY",
       "strength": 3,
       "champion": 0,
       "winner": 0,
@@ -962,7 +996,7 @@ const determineCategory = (marks, level, grade) => {
       "runner_1": 11
   },
   {
-      "name": "AYYAN EDUCATION  CENTRE ",
+      "name": "AYYAN EDUCATION  CENTRE",
       "strength": 63,
       "champion": 2,
       "winner": 8,
@@ -991,7 +1025,7 @@ const determineCategory = (marks, level, grade) => {
       "champion": 1,
       "winner": 5,
       "runner": 8,
-      "runner_1": 11
+      "runner_1": 12
   },
   {
       "name": "G.VARADHARAJALU CHETTIAR Hr. Sec SCHOOL  (T M)",
@@ -1290,7 +1324,7 @@ const determineCategory = (marks, level, grade) => {
   "runner_1": 32
 },
 {
-  "name": "BLOSSOM ACTIVITY CENTRE ",
+  "name": "BLOSSOM ACTIVITY CENTRE",
   "strength": 11,
   "champion": 1,
   "winner": 2,
@@ -1338,7 +1372,7 @@ const determineCategory = (marks, level, grade) => {
   "runner_1": 11
 },
 {
-  "name": "THE ASHRAM SCHOOL ",
+  "name": "THE ASHRAM SCHOOL",
   "strength": 12,
   "champion": 1,
   "winner": 2,
@@ -1360,6 +1394,22 @@ const determineCategory = (marks, level, grade) => {
   "winner": 4,
   "runner": 8,
   "runner_1": 9
+},
+{
+  "name": "ALAGAPPA SCHOOLS",
+  "strength": 18,
+  "champion": 1,
+  "winner": 2,
+  "runner": 3,
+  "runner_1": 5
+},
+{
+  "name": "VELAMMAL BODHI CAMPUS VELLORE",
+  "strength": 29,
+  "champion": 1,
+  "winner": 4,
+  "runner": 5,
+  "runner_1": 7
 },
 {
   "name": "AIMS CBSE SCHOOL",
@@ -1416,7 +1466,6 @@ app.post('/calculatePositions', async (req, res) => {
           let winnerCount = 0;
           let runnerCount = 0;
           let runner1Count = 0;
-
           // Allocate positions based on defined limits
           for (const student of sortedStudents) {
               if (championCount < center.champion) {
@@ -1433,6 +1482,7 @@ app.post('/calculatePositions', async (req, res) => {
                   runner1Count++;
               }
           }
+          
       }
 
       // Execute all update queries
