@@ -12,6 +12,8 @@ import SignUp from './SignUp';
 import PrivateRoute from './Pages/PrivateRoute';
 
 import DataPage from './Pages/DataPage';
+import CentersWithoutPositions from './Pages/CentersWithoutPositions';
+import CenterPositions from './Pages/CenterPositions';
 function App() {
 
   const role=window.sessionStorage.getItem("role");
@@ -22,6 +24,10 @@ function App() {
         <Routes>
           <Route path="/" element={<LoginPage />} />
           <Route path="/signup" element={<SignUp />} /> {/* Moved here */}
+          <Route
+              path="/alama24/results"
+              element={<DataPage/>}
+            />
           <Route
             path="/dashboard"
             element={
@@ -70,11 +76,23 @@ function App() {
                 </PrivateRoute>
               }
             />
-            
             <Route
-              path="data"
-              element={<DataPage/>}
+              path="center"
+              element={
+                <PrivateRoute allowedRoles={['Admin', 'Developer']}>
+                  <CentersWithoutPositions/>
+                </PrivateRoute>
+              }
             />
+            <Route
+              path="positions"
+              element={
+                <PrivateRoute allowedRoles={['Admin', 'Developer']}>
+                  <CenterPositions/>
+                </PrivateRoute>
+              }
+            />
+            
 
           </Route>
         </Routes>

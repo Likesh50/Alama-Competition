@@ -3,15 +3,16 @@ import './PrintTableComponent.css';
 import logo from '../assets/logo.png';
 
 const PrintTableComponent = React.forwardRef(({ filteredData }, ref) => {
-  const columnsToInclude = ['s_no','name_of_students', 'centre_name', 'Pro + Level', 'seat', 'position'];
+  console.log(filteredData[0]);
+  const columnsToInclude = ['s_no','name_of_students', 'centre_name', 'position',"pro","level","std_cat"];
 
   return (
     <div className="print-container" ref={ref}>
       <div>
         <img className='logos' src={logo} alt="Logo" />
         <div className='title'>
-          <span>11</span>
-          <span style={{ color: "#C0C0C0" }} className='small-text'>th</span> STATE LEVEL COMPETITION
+          <span>20</span>
+          <span style={{ color: "#C0C0C0" }} className='small-text'>th</span> INTERNATIONAL LEVEL COMPETITION
         </div>
         <hr />
       </div>

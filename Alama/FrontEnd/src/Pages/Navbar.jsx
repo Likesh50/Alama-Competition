@@ -39,6 +39,12 @@ function Navbar() {
         
         {role !== "Entry" && role !== "Center" && (
           <>
+            <li className={location.pathname === '/dashboard/positions' ? 'active' : ''}>
+              <Link to="/dashboard/positions">Center Details</Link>
+            </li>
+            <li className={location.pathname === '/dashboard/center' ? 'active' : ''}>
+              <Link to="/dashboard/center">Center With No Price</Link>
+            </li>
             <li className={location.pathname === '/dashboard/modify-position' ? 'active' : ''}>
               <Link to="/dashboard/modify-position">Modify Position</Link>
             </li>
@@ -48,6 +54,7 @@ function Navbar() {
             <li className={location.pathname === '/dashboard/upload' ? 'active' : ''}>
               <Link to="/dashboard/upload">Upload</Link>
             </li>
+            
           </>
         )}
       </ul>

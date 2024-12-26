@@ -15,10 +15,10 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 const db = mysql.createPool({
-  host: 'srv1639.hstgr.io',
-  user: 'u347524458_developer',
-  password: 'Alamatn@24', 
-  database: 'u347524458_alamatn',
+  host: 'localhost',
+  user: 'root',
+  password: '1207', 
+  database: 'alama',
   waitForConnections: true,
   connectionLimit: 50,  // Adjust this value based on your app's expected traffic
   queueLimit: 0
@@ -40,6 +40,27 @@ app.get('/', (req, res) => {
 });
 
 const upload = multer({ dest: 'uploads/' });
+
+
+
+// CREATE TABLE students (
+//   s_no INT NULL,
+//   name_of_students VARCHAR(255) NULL,
+//   centre_name VARCHAR(255) NULL,
+//   pro VARCHAR(10) NULL,
+//   level VARCHAR(10) NULL,
+//   std_cat VARCHAR(10) NULL,
+//   seat VARCHAR(20) NULL,
+//   batch INT NULL,
+//   row_no INT NULL,
+//   roll_no INT NULL,
+//   marks INT NULL,
+//   position VARCHAR(50) NULL
+// );
+
+
+
+
 
 
 app.post('/upload', async (req, res) => {
@@ -71,20 +92,31 @@ app.post('/upload', async (req, res) => {
           const [results] = await connection.query(checkQuery, [seat]);
 
           if (results.length > 0) {
-            const updateQuery = `
-              UPDATE students SET 
-              name_of_students = ?, centre_name = ?, pro = ?, level = ?, std_cat = ?, batch = ?, row_no = ?, roll_no = ?, marks = ?, position = ?
-              WHERE seat = ?
-            `;
+            // const updateQuery = `
+            //   UPDATE students SET 
+            //   name_of_students = ?, centre_name = ?, pro = ?, level = ?, std_cat = ?, batch = ?, row_no = ?, roll_no = ?, marks = ?, position = ?
+            //   WHERE seat = ?
+            // `;
+
+            const updateQuery = 
+            `UPDATE students SET 
+                name_of_students = ?, 
+                centre_name = ?, 
+                pro = ?, 
+                level = ?, 
+                std_cat = ?, 
+                state = ? ,
+                marks = ?, 
+                position = ?                
+            WHERE seat = ?`;
+
             await connection.query(updateQuery, [
               row.name_of_students,
               row.centre_name,
               row.pro,
               row.level,
               row.std_cat,
-              row.batch,
-              row.row_no,
-              row.roll_no,
+              row.state,
               row.marks,
               "-",
               seat,
@@ -247,10 +279,11 @@ app.get('/batches', async (req, res) => {
     FROM students
     ORDER BY 
         CASE 
-            WHEN position = 'champion' THEN 1
-            WHEN position = 'winner' THEN 2
-            WHEN position = 'runnerUp' THEN 3
-            WHEN position = 'runner2' THEN 4
+            WHEN position = 'Champion' THEN 1
+            WHEN position = 'Winner' THEN 2
+            WHEN position = 'Runner1' THEN 3
+            WHEN position = 'Runner2' THEN 4
+            WHEN position = 'Runner3' THEN 4
             ELSE 5
         END,
     marks DESC
@@ -263,6 +296,298 @@ app.get('/batches', async (req, res) => {
                 res.json(results);
             }
         });
+    });
+
+
+    app.post('/update-students-position', async (req, res) => {
+      const queries = [
+        `UPDATE students
+         SET position = 'Champion'
+         WHERE pro = 'AA'
+           AND level IN ('1', '2', '3')
+           AND std_cat = 'SUB JUNIOR'
+           AND marks = (
+             SELECT max_marks
+             FROM (SELECT MAX(marks) AS max_marks
+                   FROM students
+                   WHERE pro = 'AA'
+                     AND level IN ('1', '2', '3')
+                     AND std_cat = 'SUB JUNIOR') AS derived_table
+           );`,
+    
+        `UPDATE students
+         SET position = 'Champion'
+         WHERE pro = 'AA'
+           AND level IN ('4', '5', '6')
+           AND std_cat = 'SUB JUNIOR'
+           AND marks = (
+             SELECT max_marks
+             FROM (SELECT MAX(marks) AS max_marks
+                   FROM students
+                   WHERE pro = 'AA'
+                     AND level IN ('4', '5', '6')
+                     AND std_cat = 'SUB JUNIOR') AS derived_table
+           );`,
+
+           `UPDATE students
+SET position = 'Champion'
+WHERE pro = 'AA'
+  AND level IN ('1', '2', '3')
+  AND std_cat = 'JUNIOR'
+  AND marks = (
+      SELECT max_marks
+      FROM (SELECT MAX(marks) AS max_marks
+            FROM students
+            WHERE pro = 'AA'
+              AND level IN ('1', '2', '3')
+              AND std_cat = 'JUNIOR') AS derived_table
+  );`,
+
+  `UPDATE students
+SET position = 'Champion'
+WHERE pro = 'AA'
+  AND level IN ('4', '5', '6')
+  AND std_cat = 'JUNIOR'
+  AND marks = (
+      SELECT max_marks
+      FROM (SELECT MAX(marks) AS max_marks
+            FROM students
+            WHERE pro = 'AA'
+              AND level IN ('4', '5', '6')
+              AND std_cat = 'JUNIOR') AS derived_table
+  );`,
+
+  `UPDATE students
+SET position = 'Champion'
+WHERE pro = 'AA'
+  AND level IN ('1', '2', '3')
+  AND std_cat = 'SENIOR'
+  AND marks = (
+      SELECT max_marks
+      FROM (SELECT MAX(marks) AS max_marks
+            FROM students
+            WHERE pro = 'AA'
+              AND level IN ('1', '2', '3')
+              AND std_cat = 'SENIOR') AS derived_table
+  );`,
+
+  `UPDATE students
+SET position = 'Champion'
+WHERE pro = 'AA'
+  AND level IN ('4', '5', '6')
+  AND std_cat = 'SENIOR'
+  AND marks = (
+      SELECT max_marks
+      FROM (SELECT MAX(marks) AS max_marks
+            FROM students
+            WHERE pro = 'AA'
+              AND level IN ('4', '5', '6')
+              AND std_cat = 'SENIOR') AS derived_table
+  );`,
+
+  `UPDATE students
+SET position = 'Champion'
+WHERE pro = 'MA'
+  AND level IN ('1', '2')
+  AND std_cat = 'SUB JUNIOR'
+  AND marks = (
+      SELECT max_marks
+      FROM (SELECT MAX(marks) AS max_marks
+            FROM students
+            WHERE pro = 'MA'
+              AND level IN ('1', '2')
+              AND std_cat = 'SUB JUNIOR') AS derived_table
+  );`,
+
+  `UPDATE students
+SET position = 'Champion'
+WHERE pro = 'MA'
+  AND level IN ('3', '4')
+  AND std_cat = 'SUB JUNIOR'
+  AND marks = (
+      SELECT max_marks
+      FROM (SELECT MAX(marks) AS max_marks
+            FROM students
+            WHERE pro = 'MA'
+              AND level IN ('3', '4')
+              AND std_cat = 'SUB JUNIOR') AS derived_table
+  );`,
+
+  `UPDATE students
+SET position = 'Champion'
+WHERE pro = 'MA'
+  AND level IN ('5', '6')
+  AND std_cat = 'SUB JUNIOR'
+  AND marks = (
+      SELECT max_marks
+      FROM (SELECT MAX(marks) AS max_marks
+            FROM students
+            WHERE pro = 'MA'
+              AND level IN ('5', '6')
+              AND std_cat = 'SUB JUNIOR') AS derived_table
+  );
+`,
+
+`UPDATE students
+SET position = 'Champion'
+WHERE pro = 'MA'
+  AND level IN ('1', '2')
+  AND std_cat = 'JUNIOR'
+  AND marks = (
+      SELECT max_marks
+      FROM (SELECT MAX(marks) AS max_marks
+            FROM students
+            WHERE pro = 'MA'
+              AND level IN ('1', '2')
+              AND std_cat = 'JUNIOR') AS derived_table
+  );`,
+
+  `UPDATE students
+SET position = 'Champion'
+WHERE pro = 'MA'
+  AND level IN ('3', '4')
+  AND std_cat = 'JUNIOR'
+  AND marks = (
+      SELECT max_marks
+      FROM (SELECT MAX(marks) AS max_marks
+            FROM students
+            WHERE pro = 'MA'
+              AND level IN ('3', '4')
+              AND std_cat = 'JUNIOR') AS derived_table
+  );`,
+
+  `UPDATE students
+SET position = 'Champion'
+WHERE pro = 'MA'
+  AND level IN ('5', '6')
+  AND std_cat = 'JUNIOR'
+  AND marks = (
+      SELECT max_marks
+      FROM (SELECT MAX(marks) AS max_marks
+            FROM students
+            WHERE pro = 'MA'
+              AND level IN ('5', '6')
+              AND std_cat = 'JUNIOR') AS derived_table
+  );`,
+
+  `UPDATE students
+SET position = 'Champion'
+WHERE pro = 'MA'
+  AND level IN ('1', '2')
+  AND std_cat = 'SENIOR'
+  AND marks = (
+      SELECT max_marks
+      FROM (SELECT MAX(marks) AS max_marks
+            FROM students
+            WHERE pro = 'MA'
+              AND level IN ('1', '2')
+              AND std_cat = 'SENIOR') AS derived_table
+  );`,
+
+  `UPDATE students
+SET position = 'Champion'
+WHERE pro = 'MA'
+  AND level IN ('3', '4')
+  AND std_cat = 'SENIOR'
+  AND marks = (
+      SELECT max_marks
+      FROM (SELECT MAX(marks) AS max_marks
+            FROM students
+            WHERE pro = 'MA'
+              AND level IN ('3', '4')
+              AND std_cat = 'SENIOR') AS derived_table
+  );`,
+
+  `UPDATE students
+SET position = 'Champion'
+WHERE pro = 'MA'
+  AND level IN ('5', '6')
+  AND std_cat = 'SENIOR'
+  AND marks = (
+      SELECT max_marks
+      FROM (SELECT MAX(marks) AS max_marks
+            FROM students
+            WHERE pro = 'MA'
+              AND level IN ('5', '6')
+              AND std_cat = 'SENIOR') AS derived_table
+  );`
+    
+        
+      ];
+    
+      try {
+        const connection = await db.promise().getConnection();
+    
+        try {
+          // Execute all queries sequentially
+          for (const query of queries) {
+            await connection.query(query);
+          }
+    
+          res.status(200).json({ message: 'Student positions updated successfully.' });
+        } catch (error) {
+          console.error('Error executing queries:', error.message);
+          res.status(500).json({ message: 'Error updating student positions.', error: error.message });
+        } finally {
+          connection.release();
+        }
+      } catch (error) {
+        console.error('Database connection error:', error.message);
+        res.status(500).json({ message: 'Database connection error.', error: error.message });
+      }
+    });
+
+    app.get('/center-positions', (req, res) => {
+      const query = `
+        SELECT centre_name, 
+               COUNT(CASE WHEN position = 'Champion' THEN 1 END) AS Champion,
+               COUNT(CASE WHEN position = 'Winner' THEN 1 END) AS Winner,
+               COUNT(CASE WHEN position = 'Runner1' THEN 1 END) AS runner1,
+               COUNT(CASE WHEN position = 'Runner2' THEN 1 END) AS runner2,
+               COUNT(CASE WHEN position = 'Runner3' THEN 1 END) AS runner3
+        FROM students
+        GROUP BY centre_name
+      `;
+    
+      db.query(query, (err, results) => {
+        if (err) {
+          console.error('Failed to fetch data:', err);
+          res.status(500).json({ error: 'Failed to fetch data' });
+        } else {
+          res.json(results);
+        }
+      });
+    });
+
+    app.get('/centers-without-positions', (req, res) => {
+      const query = `
+    SELECT DISTINCT centre_name
+    FROM students AS t1
+    WHERE NOT EXISTS (
+      SELECT 1
+      FROM students AS t2
+      WHERE t1.centre_name = t2.centre_name
+      AND t2.position IN ('Champion', 'Winner', 'Runner1', 'Runner2', 'Runner3')
+    )
+  `;
+    
+      db.query(query, (error, results) => {
+        if (error) {
+          console.error('Error fetching data:', error);
+          return res.status(500).json({ error: 'Internal Server Error' });
+        }
+        res.json(results);
+      });
+    });
+
+    app.get('/centres', async (req, res) => {
+      try {
+        const [results] = await db.query('SELECT DISTINCT centre_name FROM students WHERE centre_name IS NOT NULL');
+        res.json(results);
+      } catch (error) {
+        console.error('Error fetching centres:', error);
+        res.status(500).json({ message: 'Error fetching centres' });
+      }
     });
 
     app.get('/data2/seat/:seat', (req, res) => {
@@ -1495,58 +1820,69 @@ app.post('/calculatePositions', async (req, res) => {
   }
 });
 
-  app.post('/updatePositions-national', async (req, res) => {
-  
-    const { marksData } = req.body;  
-  
-    try {
-      const updateMarksPromises = marksData.map(({ seat, marks }) => {
-        const parsedMarks = isNaN(parseInt(marks, 10)) ? 0 : parseInt(marks, 10);
-        const updateQuery = 'UPDATE students SET marks = ? WHERE seat = ?';
-        return db.promise().query(updateQuery, [parsedMarks, seat]);
-      });
-      await Promise.all(updateMarksPromises);
-  
-      const [students] = await db.promise().query(`
-        WITH RankedStudents AS (
-          SELECT 
-            seat,
-            marks,
-            pro,
-            level,
-            std_cat,
-            RANK() OVER (PARTITION BY pro, level, std_cat ORDER BY marks DESC) AS student_rank
-          FROM 
-            students
-        )
+app.post('/updatePositions-national', async (req, res) => {
+  const { positionThresholds } = req.body; // Only receiving position thresholds
+
+  try {
+    // Step 1: Fetch all students with their marks grouped by pro, level, std_cat
+    const [students] = await db.promise().query(`
+      WITH RankedStudents AS (
         SELECT 
           seat,
           marks,
-          CASE 
-            WHEN student_rank <= 20 THEN 'winner'
-            WHEN student_rank > 20 AND student_rank <= 40 THEN 'runnerUp'
-            WHEN student_rank > 40 AND student_rank <= 60 THEN 'runner2' 
-            ELSE '-' 
-          END AS position
+          pro,
+          level,
+          std_cat,
+          RANK() OVER (PARTITION BY pro, level, std_cat ORDER BY marks DESC) AS student_rank
         FROM 
-          RankedStudents
-        WHERE 
-          student_rank >= 0
-      `);
-  
-      const updatePositionsAndMarksPromises = students.map(student => {
-        const parsedMarks = isNaN(parseInt(student.marks, 10)) ? 0 : parseInt(student.marks, 10);
-        const updateQuery = 'UPDATE students SET position = ?, marks = ? WHERE seat = ?';
-        return db.promise().query(updateQuery, [student.position, parsedMarks, student.seat]);
-      });
-  
-      await Promise.all(updatePositionsAndMarksPromises);
-  
-      res.send('Student marks and positions updated successfully');
-    } catch (err) {
-      res.status(500).send('Error updating student marks and positions');
-    }
-  });
+          students
+      )
+      SELECT 
+        seat,
+        marks,
+        pro,
+        level,
+        std_cat,
+        student_rank
+      FROM 
+        RankedStudents
+    `);
+
+    // Step 2: Update positions based on the JSON thresholds
+    const updatePositionsPromises = students.map(student => {
+      const key = `${student.pro} ${student.level} ${student.std_cat}`;
+      const thresholds = positionThresholds[key] || { Winner: 20, Runner1: 40, Runner2: 60, Runner3: 80 }; // Default thresholds
+      let position = '-';
+
+      // Assign position based on thresholds
+      if (thresholds) {
+        if (student.student_rank <= thresholds.Winner) {
+          position = 'Winner';
+        } else if (student.student_rank <= thresholds.Winner+thresholds.Runner1) {
+          position = 'Runner1';
+        } else if (student.student_rank <= thresholds.Winner+thresholds.Runner1+thresholds.Runner2) {
+          position = 'Runner2';
+        }
+        else if (student.student_rank <= thresholds.Winner+thresholds.Runner1+thresholds.Runner2+thresholds.Runner3) {
+          position = 'Runner3';
+        }
+      }
+
+
+      // Update the position in the database
+      const updateQuery = 'UPDATE students SET position = ? WHERE seat = ?';
+      return db.promise().query(updateQuery, [position, student.seat]);
+    });
+
+    await Promise.all(updatePositionsPromises);
+
+    res.send('Student positions updated successfully');
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error updating student positions');
+  }
+});
+
 
       
     app.post('/updateMarks', async (req, res) => {

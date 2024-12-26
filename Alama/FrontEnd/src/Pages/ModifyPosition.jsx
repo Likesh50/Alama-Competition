@@ -55,7 +55,7 @@ const ModifyPosition = () => {
           "Pro + Level+ std cat": (row.pro || 0) + " " + (row.level || 0) + " " + (row.std_cat),
         }));
 
-        const uniqueProLevelStdCat = [...new Set(dataWithLevel.map(item => item["Pro + Level+ std cat"]))];
+        const uniqueProLevelStdCat = [...new Set(dataWithLevel.map(item => item["centre_name"]))];
         setProLevelStdCatOptions(uniqueProLevelStdCat);
 
         if (uniqueProLevelStdCat.length > 0) {
@@ -75,7 +75,7 @@ const ModifyPosition = () => {
         .then(response => {
           setLoading(false);
           const filteredStudents = response.data.filter(student => 
-            (student.pro + " " + student.level + " " + student.std_cat) === selectedProLevelStdCat
+            (student.centre_name) === selectedProLevelStdCat
           );
           setStudents(filteredStudents);
           const initialPositions = {};
@@ -186,7 +186,8 @@ const ModifyPosition = () => {
           <tr>
             <th style={{ width: '150px' }}>S NO</th>
             <th style={{ width: '150px' }}>Name</th>
-            <th style={{ width: '150px' }}>Seat</th>
+            <th style={{ width: '150px' }}>Center name</th>
+            <th style={{ width: '150px' }}>Mark</th>
             <th style={{ width: '150px' }}>Modified Position</th>
           </tr>
         </thead>
@@ -195,16 +196,18 @@ const ModifyPosition = () => {
             <tr key={student.seat}>
               <td style={{ width: '150px' }}>{index + 1}</td>
               <td style={{ width: '150px' }}>{student.name_of_students}</td>
-              <td style={{ width: '150px' }}>{student.seat}</td>
+              <td style={{ width: '150px' }}>{student.centre_name}</td>
+              <td style={{ width: '150px' }}>{student.marks}</td>
               <td style={{ width: '150px' }}>
                 <select
                   value={positionData[student.seat] || student.position} 
                   onChange={(e) => handlePositionChange(student.seat, e.target.value)}  
                 >
-                  <option value="champion">Champion</option>
-                  <option value="winner">winner</option>
-                  <option value="runnerUp">runnerUp</option>
-                  <option value="runner2">runner2</option>
+                  <option value="Champion">Champion</option>
+                  <option value="Winner">Winner</option>
+                  <option value="Runner1">Runner1</option>
+                  <option value="Runner2">Runner2</option>
+                  <option value="Runner3">Runner3</option>
                   <option value="-">-</option>
                 </select>
               </td>
