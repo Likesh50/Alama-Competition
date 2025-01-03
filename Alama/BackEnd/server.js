@@ -42,6 +42,27 @@ app.get('/', (req, res) => {
 const upload = multer({ dest: 'uploads/' });
 
 
+app.get('/category-marks', (req, res) => {
+  const query = `
+      SELECT 
+          CONCAT(pro, ' ', level, ' ', std_cat) AS category,
+          MIN(marks) AS min_marks,
+          MAX(marks) AS max_marks
+      FROM 
+          students
+      GROUP BY 
+          pro, level, std_cat;
+  `;
+
+  db.query(query, (error, results) => {
+      if (error) {
+          console.error('Error executing query:', error);
+          return res.status(500).json({ error: 'Database query failed' });
+      }
+
+      res.json(results);
+  });
+});
 
 // CREATE TABLE students (
 //   s_no INT NULL,
@@ -1848,33 +1869,71 @@ app.post('/updatePositions-national', async (req, res) => {
         RankedStudents
     `);
 
-    // Step 2: Update positions based on the JSON thresholds
-    const updatePositionsPromises = students.map(student => {
+    // Step 2: Group students by category
+    const groupedStudents = students.reduce((acc, student) => {
       const key = `${student.pro} ${student.level} ${student.std_cat}`;
-      const thresholds = positionThresholds[key] || { Winner: 20, Runner1: 40, Runner2: 60, Runner3: 80 }; // Default thresholds
-      let position = '-';
+      if (!acc[key]) acc[key] = [];
+      acc[key].push(student);
+      return acc;
+    }, {});
 
-      // Assign position based on thresholds
-      if (thresholds) {
-        if (student.student_rank <= thresholds.Winner) {
-          position = 'Winner';
-        } else if (student.student_rank <= thresholds.Winner+thresholds.Runner1) {
-          position = 'Runner1';
-        } else if (student.student_rank <= thresholds.Winner+thresholds.Runner1+thresholds.Runner2) {
-          position = 'Runner2';
+    // Step 3: Assign positions considering tied ranks and thresholds
+    const updatePositionsPromises = Object.entries(groupedStudents).flatMap(([key, studentsInGroup]) => {
+      const thresholds = positionThresholds[key] || { Winner: 20, Runner1: 40, Runner2: 60, Runner3: 80, cutoff: 0 };
+      const cutoff = thresholds.cutoff || 0;
+
+      let remainingThresholds = {
+        Winner: thresholds.Winner,
+        Runner1: thresholds.Runner1,
+        Runner2: thresholds.Runner2,
+        Runner3: thresholds.Runner3,
+      };
+
+      let currentPosition = 'Winner';
+
+      // Sort students by rank
+      studentsInGroup.sort((a, b) => a.student_rank - b.student_rank);
+
+      // Track last processed rank for tied rank handling
+      let lastProcessedRank = null;
+      let lastAssignedPosition = null;
+
+      return studentsInGroup.map(student => {
+        if (student.marks < cutoff) {
+          return db.promise().query('UPDATE students SET position = ? WHERE seat = ?', ['-', student.seat]);
         }
-        else if (student.student_rank <= thresholds.Winner+thresholds.Runner1+thresholds.Runner2+thresholds.Runner3) {
-          position = 'Runner3';
+
+        if (lastProcessedRank === student.student_rank) {
+          // Same rank as the last student, assign the same position
+          return db.promise().query('UPDATE students SET position = ? WHERE seat = ?', [lastAssignedPosition, student.seat]);
         }
-      }
 
+        // Move to the next position if the current threshold is exhausted
+        while (remainingThresholds[currentPosition] === 0) {
+          if (currentPosition === 'Winner') {
+            currentPosition = 'Runner1';
+          } else if (currentPosition === 'Runner1') {
+            currentPosition = 'Runner2';
+          } else if (currentPosition === 'Runner2') {
+            currentPosition = 'Runner3';
+          } else {
+            currentPosition = '-';
+          }
+        }
 
-      // Update the position in the database
-      const updateQuery = 'UPDATE students SET position = ? WHERE seat = ?';
-      return db.promise().query(updateQuery, [position, student.seat]);
+        lastProcessedRank = student.student_rank;
+        lastAssignedPosition = currentPosition;
+
+        // Decrement the threshold for the current position
+        if (currentPosition !== '-') {
+          remainingThresholds[currentPosition]--;
+        }
+
+        return db.promise().query('UPDATE students SET position = ? WHERE seat = ?', [currentPosition, student.seat]);
+      });
     });
 
-    await Promise.all(updatePositionsPromises);
+    await Promise.all(updatePositionsPromises.flat());
 
     res.send('Student positions updated successfully');
   } catch (err) {

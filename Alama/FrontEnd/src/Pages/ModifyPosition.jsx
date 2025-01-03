@@ -188,6 +188,9 @@ const ModifyPosition = () => {
             <th style={{ width: '150px' }}>Name</th>
             <th style={{ width: '150px' }}>Center name</th>
             <th style={{ width: '150px' }}>Mark</th>
+            <th style={{ width: '150px' }}>Pro</th>
+            <th style={{ width: '150px' }}>Level</th>
+            <th style={{ width: '150px' }}>CAtegory</th>
             <th style={{ width: '150px' }}>Modified Position</th>
           </tr>
         </thead>
@@ -197,6 +200,9 @@ const ModifyPosition = () => {
               <td style={{ width: '150px' }}>{index + 1}</td>
               <td style={{ width: '150px' }}>{student.name_of_students}</td>
               <td style={{ width: '150px' }}>{student.centre_name}</td>
+              <td style={{ width: '150px' }}>{student.pro}</td>
+              <td style={{ width: '150px' }}>{student.level}</td>
+              <td style={{ width: '150px' }}>{student.std_cat}</td>
               <td style={{ width: '150px' }}>{student.marks}</td>
               <td style={{ width: '150px' }}>
                 <select

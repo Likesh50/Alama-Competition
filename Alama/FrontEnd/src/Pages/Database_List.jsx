@@ -117,65 +117,63 @@ const Database_List = () => {
   
     // Prepare category data to send in the request body
     const categoryData = {
-      "AA BASIC BABY JUNIOR": { "Winner": 2, "Runner1": 3, "Runner2": 5, "Runner3": 6 },
-      "AA BASIC SUB JUNIOR": { "Winner": 1, "Runner1": 2, "Runner2": 3, "Runner3": 4 },
-      "AA BASIC JUNIOR": { "Winner": 1, "Runner1": 2, "Runner2": 2, "Runner3": 2 },
-      "AA BASIC SENIOR": { "Winner": 1, "Runner1": 1, "Runner2": 0, "Runner3": 0 },
+      "AA BASIC BABY JUNIOR": { "Winner": 1, "Runner1": 1, "Runner2": 1, "Runner3": 2,"cutoff":35 },
+      "AA BASIC SUB JUNIOR": { "Winner": 2, "Runner1": 2, "Runner2": 4, "Runner3": 4,"cutoff":35 },
+      "AA BASIC JUNIOR": { "Winner": 1, "Runner1": 2, "Runner2": 2, "Runner3": 3,"cutoff":35 },
+      "AA BASIC SENIOR": { "Winner": 1, "Runner1": 2, "Runner2": 2, "Runner3": 3,"cutoff":35 },
     
-      "AA 1 BABY JUNIOR": { "Winner": 1, "Runner1": 1, "Runner2": 0, "Runner3": 0 },   //need to change
-      "AA 1 SUB JUNIOR": { "Winner": 1, "Runner1": 2, "Runner2": 2, "Runner3": 3 },
-      "AA 1 JUNIOR": { "Winner": 1, "Runner1": 2, "Runner2": 3, "Runner3": 4 },
-      "AA 1 SENIOR": { "Winner": 1, "Runner1": 1, "Runner2": 1, "Runner3": 2 },
+      "AA 1 SUB JUNIOR": { "Winner": 1, "Runner1": 1, "Runner2": 1, "Runner3": 2,"cutoff":35 },
+      "AA 1 JUNIOR": { "Winner": 1, "Runner1": 1, "Runner2": 2, "Runner3": 3,"cutoff":35 },
+      "AA 1 SENIOR": { "Winner": 1, "Runner1": 1, "Runner2": 2, "Runner3": 2,"cutoff":35 },
     
-      "AA 2 BABY JUNIOR": { "Winner": 1, "Runner1": 0, "Runner2": 0, "Runner3": 0 },  //need to change
-      "AA 2 SUB JUNIOR": { "Winner": 1, "Runner1": 2, "Runner2": 2, "Runner3": 2 },
-      "AA 2 JUNIOR": { "Winner": 1, "Runner1": 3, "Runner2": 4, "Runner3": 4 },
-      "AA 2 SENIOR": { "Winner": 1, "Runner1": 1, "Runner2": 1, "Runner3": 1 },
+      "AA 2 SUB JUNIOR": { "Winner": 1, "Runner1": 1, "Runner2": 1, "Runner3": 1,"cutoff":35 },
+      "AA 2 JUNIOR": { "Winner": 1, "Runner1": 1, "Runner2": 2, "Runner3": 3,"cutoff":35 },
+      "AA 2 SENIOR": { "Winner": 1, "Runner1": 1, "Runner2": 1, "Runner3": 2,"cutoff":35 },
     
-      "AA 3 SUB JUNIOR": { "Winner": 1, "Runner1": 1, "Runner2": 1, "Runner3": 0 },  
-      "AA 3 JUNIOR": { "Winner": 1, "Runner1": 2, "Runner2": 3, "Runner3": 4 },
-      "AA 3 SENIOR": { "Winner": 1, "Runner1": 2, "Runner2": 3, "Runner3": 5 },
+      "AA 3 SUB JUNIOR": { "Winner": 1, "Runner1": 1, "Runner2": 1, "Runner3": 0,"cutoff":35 },  
+      "AA 3 JUNIOR": { "Winner": 1, "Runner1": 1, "Runner2": 1, "Runner3": 2,"cutoff":35 },
+      "AA 3 SENIOR": { "Winner": 2, "Runner1": 2, "Runner2": 3, "Runner3": 4,"cutoff":35 },
     
-      "AA 4 SUB JUNIOR": { "Winner": 1, "Runner1": 1, "Runner2": 1, "Runner3": 0 },
-      "AA 4 JUNIOR": { "Winner": 1, "Runner1": 1, "Runner2": 1, "Runner3": 2 },
-      "AA 4 SENIOR": { "Winner": 1, "Runner1": 2, "Runner2": 3, "Runner3": 5 },
+      "AA 4 SUB JUNIOR": { "Winner": 1, "Runner1": 0, "Runner2": 0, "Runner3": 0,"cutoff":35 },
+      "AA 4 JUNIOR": { "Winner": 1, "Runner1": 1, "Runner2": 1, "Runner3": 1,"cutoff":35 },
+      "AA 4 SENIOR": { "Winner": 1, "Runner1": 2, "Runner2": 3, "Runner3": 3,"cutoff":35 },
     
-      "AA 5 SUB JUNIOR": { "Winner": 1, "Runner1": 0, "Runner2": 0, "Runner3": 0 },
-      "AA 5 JUNIOR": { "Winner": 1, "Runner1": 1, "Runner2": 1, "Runner3": 0 },
-      "AA 5 SENIOR": { "Winner": 1, "Runner1": 2, "Runner2": 3, "Runner3": 4 },
+      "AA 5 SUB JUNIOR": { "Winner": 0, "Runner1": 0, "Runner2": 0, "Runner3": 0,"cutoff":30 },
+      "AA 5 JUNIOR": { "Winner": 1, "Runner1": 0, "Runner2": 0, "Runner3": 0,"cutoff":30 },
+      "AA 5 SENIOR": { "Winner": 1, "Runner1": 1, "Runner2": 1, "Runner3": 0,"cutoff":30 },
     
-      "AA 6 JUNIOR": { "Winner": 1, "Runner1": 1, "Runner2": 1, "Runner3": 0 },
-      "AA 6 SENIOR": { "Winner": 1, "Runner1": 1, "Runner2": 1, "Runner3": 1 },
+      "AA 6 JUNIOR": { "Winner": 0, "Runner1": 0, "Runner2": 0, "Runner3": 0,"cutoff":30 },
+      "AA 6 SENIOR": { "Winner": 1, "Runner1": 1, "Runner2": 1, "Runner3": 0,"cutoff":30 },
 
 
     
-      "MA BASIC SUB JUNIOR": { "Winner": 1, "Runner1": 2, "Runner2": 3, "Runner3": 5 },
-      "MA BASIC JUNIOR": { "Winner": 1, "Runner1": 2, "Runner2": 4, "Runner3": 5 },
-      "MA BASIC SENIOR": { "Winner": 1, "Runner1": 2, "Runner2": 2, "Runner3": 3 },
+      "MA BASIC SUB JUNIOR": { "Winner": 1, "Runner1": 2, "Runner2": 3, "Runner3": 3,"cutoff":35 },
+      "MA BASIC JUNIOR": { "Winner": 2, "Runner1": 2, "Runner2": 4, "Runner3": 4,"cutoff":35 },
+      "MA BASIC SENIOR": { "Winner": 1, "Runner1": 1, "Runner2": 2, "Runner3": 3,"cutoff":35 },
     
-      "MA 1 SUB JUNIOR": { "Winner": 1, "Runner1": 2, "Runner2": 2, "Runner3": 3 },
-      "MA 1 JUNIOR": { "Winner": 2, "Runner1": 5, "Runner2": 7, "Runner3": 8 },
-      "MA 1 SENIOR": { "Winner": 1, "Runner1": 2, "Runner2": 3, "Runner3": 3 },
+      "MA 1 SUB JUNIOR": { "Winner": 1, "Runner1": 2, "Runner2": 4, "Runner3": 4 ,"cutoff":35},
+      "MA 1 JUNIOR": { "Winner": 2, "Runner1": 3, "Runner2": 4, "Runner3": 6 ,"cutoff":35},
+      "MA 1 SENIOR": { "Winner": 1, "Runner1": 2, "Runner2": 3, "Runner3": 4,"cutoff":35 },
     
-      "MA 2 SUB JUNIOR": { "Winner": 1, "Runner1": 1, "Runner2": 1, "Runner3": 2 },
-      "MA 2 JUNIOR": { "Winner": 1, "Runner1": 2, "Runner2": 4, "Runner3": 5 },
-      "MA 2 SENIOR": { "Winner": 1, "Runner1": 2, "Runner2": 2, "Runner3": 3 },
+      "MA 2 SUB JUNIOR": { "Winner": 1, "Runner1": 1, "Runner2": 1, "Runner3": 0,"cutoff":35 },
+      "MA 2 JUNIOR": { "Winner": 1, "Runner1": 2, "Runner2": 4, "Runner3": 4 ,"cutoff":35},
+      "MA 2 SENIOR": { "Winner": 1, "Runner1": 1, "Runner2": 2, "Runner3": 2 ,"cutoff":35},
     
-      "MA 3 SUB JUNIOR": { "Winner": 1, "Runner1": 1, "Runner2": 0, "Runner3": 0 },
-      "MA 3 JUNIOR": { "Winner": 1, "Runner1": 2, "Runner2": 3, "Runner3": 3 },
-      "MA 3 SENIOR": { "Winner": 1, "Runner1": 2, "Runner2": 2, "Runner3": 2 },
+      "MA 3 SUB JUNIOR": { "Winner": 0, "Runner1": 0, "Runner2": 0, "Runner3": 0,"cutoff":30 },
+      "MA 3 JUNIOR": { "Winner": 1, "Runner1": 1, "Runner2": 2, "Runner3": 2,"cutoff":30 },
+      "MA 3 SENIOR": { "Winner": 1, "Runner1": 1, "Runner2": 2, "Runner3": 3,"cutoff":30 },
     
-      "MA 4 SUB JUNIOR": { "Winner": 1, "Runner1": 0, "Runner2": 0, "Runner3": 0 },
-      "MA 4 JUNIOR": { "Winner": 1, "Runner1": 1, "Runner2": 1, "Runner3": 0 },
-      "MA 4 SENIOR": { "Winner": 1, "Runner1": 1, "Runner2": 1, "Runner3": 1 },
+      "MA 4 SUB JUNIOR": { "Winner": 1, "Runner1": 0, "Runner2": 0, "Runner3": 0,"cutoff":30 },
+      "MA 4 JUNIOR": { "Winner": 1, "Runner1": 1, "Runner2": 1, "Runner3": 0 ,"cutoff":30},
+      "MA 4 SENIOR": { "Winner": 1, "Runner1": 1, "Runner2": 1, "Runner3": 1 ,"cutoff":30},
     
-      "MA 5 SUB JUNIOR": { "Winner": 1, "Runner1": 1, "Runner2": 0, "Runner3": 0 },
-      "MA 5 JUNIOR": { "Winner": 1, "Runner1": 1, "Runner2": 1, "Runner3": 0 },
-      "MA 5 SENIOR": { "Winner": 1, "Runner1": 1, "Runner2": 0, "Runner3": 0 },
+      "MA 5 SUB JUNIOR": { "Winner": 0, "Runner1": 0, "Runner2": 0, "Runner3": 0,"cutoff":25 },
+      "MA 5 JUNIOR": { "Winner": 1, "Runner1": 1, "Runner2": 1, "Runner3": 0,"cutoff":25 },
+      "MA 5 SENIOR": { "Winner": 0, "Runner1": 0, "Runner2": 0, "Runner3": 0,"cutoff":25 },
     
-      "MA 6 SUB JUNIOR": { "Winner": 1, "Runner1": 1, "Runner2": 1, "Runner3": 1 },
-      "MA 6 JUNIOR": { "Winner": 2, "Runner1": 5, "Runner2": 6, "Runner3": 7 },
-      "MA 6 SENIOR": { "Winner": 2, "Runner1": 6, "Runner2": 7, "Runner3": 8 }
+      "MA 6 SUB JUNIOR": { "Winner": 1, "Runner1": 1, "Runner2": 1, "Runner3": 0,"cutoff":25 },
+      "MA 6 JUNIOR": { "Winner": 2, "Runner1": 2, "Runner2": 4, "Runner3": 4,"cutoff":25 },
+      "MA 6 SENIOR": { "Winner": 2, "Runner1": 4, "Runner2": 5, "Runner3": 6,"cutoff":25 }
     };
     
     
@@ -239,10 +237,10 @@ const Database_List = () => {
     XLSX.writeFile(workbook, 'TableData.xlsx'); 
   };
 
-  // const getDistinctProLevelStdCat = () => {
-  //   const uniqueValues = [...new Set(tableData.map(row => row["Pro + Level+ std cat"]))];
-  //   return uniqueValues;
-  // };
+  const getDistinctProLevelStdCat = () => {
+    const uniqueValues = [...new Set(tableData.map(row => row["Pro + Level+ std cat"]))];
+    return uniqueValues;
+  };
 
   const handlePrint = useReactToPrint({
     content: () => printRef.current, 
@@ -337,7 +335,7 @@ const Database_List = () => {
         <thead>
           <tr>
             {currentRecords.length > 0 &&
-              ["s_no", "name_of_students", "centre_name","pro","level","std_cat", "seat", "state", "marks"].map((key) => (
+              ["s_no", "name_of_students", "centre_name","pro","level","std_cat", "seat", "marks"].map((key) => (
                 <th key={key}>{formatHeader(key)}</th>
               ))
             }
@@ -348,7 +346,7 @@ const Database_List = () => {
           {currentRecords.map((row, index) => (
             <tr key={index}>
               {Object.entries(row)
-                .filter(([key]) => ["s_no", "name_of_students", "centre_name","pro","level","std_cat", "seat", "state", "marks"].includes(key))
+                .filter(([key]) => ["s_no", "name_of_students", "centre_name","pro","level","std_cat", "seat", "marks"].includes(key))
                 .map(([key, value], idx) => (
                   key === "s_no" ? 
                     <td key={idx} style={{ color: "#FFA500" }}>{indexOfFirstRecord + index + 1}</td> :
@@ -360,8 +358,8 @@ const Database_List = () => {
           ))}
         </tbody>
       </table>
-
-      {/* <div>
+{/* 
+      <div>
   <button onClick={() => console.log(getDistinctProLevelStdCat())}>
     Show Distinct Pro + Level + Std Cat
   </button>

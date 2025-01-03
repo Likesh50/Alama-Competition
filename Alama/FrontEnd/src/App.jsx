@@ -14,6 +14,7 @@ import PrivateRoute from './Pages/PrivateRoute';
 import DataPage from './Pages/DataPage';
 import CentersWithoutPositions from './Pages/CentersWithoutPositions';
 import CenterPositions from './Pages/CenterPositions';
+import CategoryMarksTable from './Pages/CategoryMarksTable';
 function App() {
 
   const role=window.sessionStorage.getItem("role");
@@ -89,6 +90,14 @@ function App() {
               element={
                 <PrivateRoute allowedRoles={['Admin', 'Developer']}>
                   <CenterPositions/>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="categorymarks"
+              element={
+                <PrivateRoute allowedRoles={['Admin', 'Developer']}>
+                  <CategoryMarksTable/>
                 </PrivateRoute>
               }
             />

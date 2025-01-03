@@ -45,6 +45,9 @@ function Navbar() {
             <li className={location.pathname === '/dashboard/center' ? 'active' : ''}>
               <Link to="/dashboard/center">Center With No Price</Link>
             </li>
+            <li className={location.pathname === '/dashboard/categorymarks' ? 'active' : ''}>
+              <Link to="/dashboard/categorymarks">Category Splitup</Link>
+            </li>
             <li className={location.pathname === '/dashboard/modify-position' ? 'active' : ''}>
               <Link to="/dashboard/modify-position">Modify Position</Link>
             </li>

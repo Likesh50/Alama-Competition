@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import styled from 'styled-components';
-
+import { useReactToPrint } from 'react-to-print';
+import logo from '../assets/logo.png';
 // Styled components
 const Container = styled.div`
   padding: 20px;
@@ -13,6 +14,12 @@ const Title = styled.h2`
   font-size: 2rem;
   color: #333;
   margin-bottom: 20px;
+`;
+
+const Dropdown = styled.select`
+  margin-bottom: 20px;
+  padding: 10px;
+  font-size: 1rem;
 `;
 
 const Table = styled.table`
@@ -51,17 +58,73 @@ const Message = styled.p`
   color: ${(props) => (props.error ? 'red' : '#555')};
 `;
 
+const PrintButton = styled.button`
+  margin-top: 20px;
+  padding: 10px 20px;
+  font-size: 1rem;
+  color: #fff;
+  background-color: #007bff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #0056b3;
+  }
+`;
+
+const PrintOnlyContent = styled.div`
+  display: none;
+
+  @media print {
+    display: block;
+    text-align: center;
+    margin-bottom: 20px;
+
+    .logos {
+      max-width: 150px;
+      margin-bottom: 10px;
+    }
+
+    .title {
+      font-size: 1.5rem;
+      font-weight: bold;
+
+      .small-text {
+        font-size: 0.8rem;
+        vertical-align: super;
+      }
+    }
+      tfoot {
+    display: table-row-group;
+  }
+
+    hr {
+      margin-top: 10px;
+    }
+  }
+`;
+
 const CenterPositions = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  
-  // States for summing up the values
-  const [totalChampions, setTotalChampions] = useState(0);
-  const [totalWinner, setTotalWinners] = useState(0);
-  const [totalRunner1, setTotalRunnerUps] = useState(0);
-  const [totalRunner2, setTotalRunner2] = useState(0);
-  const [totalRunner3, setTotalRunner3] = useState(0);
+  const [selectedCenter, setSelectedCenter] = useState('All');
+
+  const [totals, setTotals] = useState({
+    totalChampions: 0,
+    totalWinners: 0,
+    totalRunner1: 0,
+    totalRunner2: 0,
+    totalRunner3: 0,
+  });
+
+  const tableRef = useRef();
+
+  const handlePrint = useReactToPrint({
+    content: () => tableRef.current,
+    documentTitle: 'Center Positions',
+  });
 
   useEffect(() => {
     const fetchPositions = async () => {
@@ -69,19 +132,7 @@ const CenterPositions = () => {
         const response = await axios.get(`${import.meta.env.VITE_ALAMA_Competition_URL}/center-positions`);
         const fetchedData = response.data;
 
-        // Sum up the values
-        const Champion = fetchedData.reduce((acc, row) => acc + (parseInt(row.Champion) || 0), 0);
-        const Winner = fetchedData.reduce((acc, row) => acc + (parseInt(row.Winner) || 0), 0);
-        const runner1 = fetchedData.reduce((acc, row) => acc + (parseInt(row.runner1) || 0), 0);
-        const runner2 = fetchedData.reduce((acc, row) => acc + (parseInt(row.runner2) || 0), 0);
-        const runner3 = fetchedData.reduce((acc, row) => acc + (parseInt(row.runner3) || 0), 0);
-
-        setTotalChampions(Champion);
-        setTotalWinners(Winner);
-        setTotalRunnerUps(runner1);
-        setTotalRunner2(runner2);
-        setTotalRunner3(runner3);
-
+        calculateTotals(fetchedData);
         setData(fetchedData);
       } catch (err) {
         setError('Failed to fetch center positions. Please try again later.');
@@ -93,46 +144,93 @@ const CenterPositions = () => {
     fetchPositions();
   }, []);
 
+  const calculateTotals = (filteredData) => {
+    const totalChampions = filteredData.reduce((acc, row) => acc + (parseInt(row.Champion) || 0), 0);
+    const totalWinners = filteredData.reduce((acc, row) => acc + (parseInt(row.Winner) || 0), 0);
+    const totalRunner1 = filteredData.reduce((acc, row) => acc + (parseInt(row.runner1) || 0), 0);
+    const totalRunner2 = filteredData.reduce((acc, row) => acc + (parseInt(row.runner2) || 0), 0);
+    const totalRunner3 = filteredData.reduce((acc, row) => acc + (parseInt(row.runner3) || 0), 0);
+
+    setTotals({ totalChampions, totalWinners, totalRunner1, totalRunner2, totalRunner3 });
+  };
+
+  const handleCenterChange = (event) => {
+    const selected = event.target.value;
+    setSelectedCenter(selected);
+
+    if (selected === 'All') {
+      calculateTotals(data);
+    } else {
+      const filteredData = data.filter((row) => row.centre_name === selected);
+      calculateTotals(filteredData);
+    }
+  };
+
+  const filteredData = selectedCenter === 'All' ? data : data.filter((row) => row.centre_name === selectedCenter);
+
   return (
     <Container>
       <Title>Center Positions</Title>
+      <PrintButton onClick={handlePrint} style={{marginRight:"50px"}}>Print</PrintButton>
       {loading && <Message>Loading...</Message>}
       {error && <Message error>{error}</Message>}
       {!loading && !error && (
-        <Table>
-          <thead>
-            <tr>
-              <TableHeader>Center Name</TableHeader>
-              <TableHeader>Champion</TableHeader>
-              <TableHeader>Winner</TableHeader>
-              <TableHeader>Runner 1</TableHeader>
-              <TableHeader>Runner 2</TableHeader>
-              <TableHeader>Runner 3</TableHeader>
-            </tr>
-          </thead>
-          <tbody>
-            {data.map((row, index) => (
-              <TableRow key={index}>
-                <TableCell>{row.centre_name}</TableCell>
-                <TableCell>{row.Champion}</TableCell>
-                <TableCell>{row.Winner}</TableCell>
-                <TableCell>{row.runner1}</TableCell>
-                <TableCell>{row.runner2}</TableCell>
-                <TableCell>{row.runner3}</TableCell>
-              </TableRow>
+        <>
+        
+          <Dropdown value={selectedCenter} onChange={handleCenterChange}>
+            <option value="All">All Centers</option>
+            {Array.from(new Set(data.map((row) => row.centre_name))).map((center) => (
+              <option key={center} value={center}>
+                {center}
+              </option>
             ))}
-          </tbody>
-          <tfoot>
-            <TableRow>
-              <TableCell><strong>Total</strong></TableCell>
-              <TableCell><strong>{totalChampions}</strong></TableCell>
-              <TableCell><strong>{totalWinner}</strong></TableCell>
-              <TableCell><strong>{totalRunner1}</strong></TableCell>
-              <TableCell><strong>{totalRunner2}</strong></TableCell>
-              <TableCell><strong>{totalRunner3}</strong></TableCell>
-            </TableRow>
-          </tfoot>
-        </Table>
+          </Dropdown>
+          <div ref={tableRef}>
+            <PrintOnlyContent>
+              <img className="logos" src={logo} alt="Logo" />
+              <div className="title">
+                <span>20</span>
+                <span style={{ color: '#C0C0C0' }} className="small-text">th</span> INTERNATIONAL LEVEL COMPETITION
+              </div>
+              <hr />
+            </PrintOnlyContent>
+            <Table>
+              <thead>
+                <tr>
+                  <TableHeader>Center Name</TableHeader>
+                  <TableHeader>Champion</TableHeader>
+                  <TableHeader>Winner</TableHeader>
+                  <TableHeader>Runner 1</TableHeader>
+                  <TableHeader>Runner 2</TableHeader>
+                  <TableHeader>Runner 3</TableHeader>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredData.map((row, index) => (
+                  <TableRow key={index}>
+                    <TableCell>{row.centre_name}</TableCell>
+                    <TableCell>{row.Champion}</TableCell>
+                    <TableCell>{row.Winner}</TableCell>
+                    <TableCell>{row.runner1}</TableCell>
+                    <TableCell>{row.runner2}</TableCell>
+                    <TableCell>{row.runner3}</TableCell>
+                  </TableRow>
+                ))}
+              </tbody>
+              
+                <TableRow>
+                  <TableCell><strong>Total</strong></TableCell>
+                  <TableCell><strong>{totals.totalChampions}</strong></TableCell>
+                  <TableCell><strong>{totals.totalWinners}</strong></TableCell>
+                  <TableCell><strong>{totals.totalRunner1}</strong></TableCell>
+                  <TableCell><strong>{totals.totalRunner2}</strong></TableCell>
+                  <TableCell><strong>{totals.totalRunner3}</strong></TableCell>
+                </TableRow>
+              
+            </Table>
+          </div>
+          
+        </>
       )}
     </Container>
   );
