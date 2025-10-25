@@ -98,7 +98,7 @@ function LoginPage() {
       if (role === 'Center') {
         navigate('dashboard/data');
       } else {
-        navigate('dashboard'); // Fallback for other roles, if needed
+        navigate('dashboard'); 
       }
     } catch (err) {
       setError(err.message);

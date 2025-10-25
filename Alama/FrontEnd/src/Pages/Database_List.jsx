@@ -113,10 +113,10 @@ const Database_List = () => {
 
 
   const handleCalculateResults = async () => {
-    setCalculating(true); // Set calculating to true to show loading state
+    setCalculating(true); 
   
-    // Prepare category data to send in the request body
     const categoryData = {
+      "AA PRE LEVEL BABY JUNIOR": { "Winner": 1, "Runner1": 2, "Runner2": 2, "Runner3": 3,"cutoff":35 },
       "AA BASIC BABY JUNIOR": { "Winner": 1, "Runner1": 1, "Runner2": 1, "Runner3": 2,"cutoff":35 },
       "AA BASIC SUB JUNIOR": { "Winner": 2, "Runner1": 2, "Runner2": 4, "Runner3": 4,"cutoff":35 },
       "AA BASIC JUNIOR": { "Winner": 1, "Runner1": 2, "Runner2": 2, "Runner3": 3,"cutoff":35 },
@@ -179,18 +179,16 @@ const Database_List = () => {
     
   
     try {
-      // Send the category data along with the request
       const response = await axios.post(`${import.meta.env.VITE_ALAMA_Competition_URL}/updatePositions-national`, {
         positionThresholds: categoryData
       });
       
       console.log('Calculation result:', response.data);
-      // Optionally, handle the response to update your state or UI as needed
     } catch (error) {
       console.error('Error calculating positions:', error);
     } finally {
       window.location.reload();
-      setCalculating(false); // Reset the calculating state
+      setCalculating(false); 
     }
   };
   
@@ -243,7 +241,7 @@ const Database_List = () => {
   };
 
   const handlePrint = useReactToPrint({
-    content: () => printRef.current, 
+    content: () => m.current, 
     documentTitle: 'Custom Table Report',
   });
 

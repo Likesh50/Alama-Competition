@@ -20,17 +20,16 @@ const db = mysql.createPool({
   password: '1207', 
   database: 'alama',
   waitForConnections: true,
-  connectionLimit: 50,  // Adjust this value based on your app's expected traffic
+  connectionLimit: 50,  
   queueLimit: 0
 });
 
-// Test the pool connection
 db.getConnection((err, connection) => {
   if (err) {
     console.error('Database connection failed:', err);
   } else {
     console.log('Connected to the database');
-    connection.release(); // Release the connection back to the pool
+    connection.release(); 
   }
 });
 
@@ -91,6 +90,12 @@ app.post('/upload', async (req, res) => {
     return res.status(400).send('Invalid or missing data');
   }
 
+  // Define valid columns for the students table
+  const validColumns = [
+    's_no', 'name_of_students', 'centre_name', 'pro', 'level', 
+    'std_cat', 'seat', 'batch', 'row_no', 'roll_no', 'marks', 'state'
+  ];
+
   try {
     // Use a transaction for batch processing
     await db.promise().getConnection().then(async (connection) => {
@@ -98,53 +103,51 @@ app.post('/upload', async (req, res) => {
 
       try {
         for (const row of excelData) {
-          Object.keys(row).forEach((key) => {
-            if (typeof row[key] === 'string') {
-              row[key] = row[key].trim();
+          // Filter only valid keys
+          const filteredRow = Object.keys(row).reduce((acc, key) => {
+            if (validColumns.includes(key)) {
+              acc[key] = typeof row[key] === 'string' ? row[key].trim() : row[key];
             }
-          });
+            return acc;
+          }, {});
 
-          const marks = isNaN(row.marks) ? 0 : Number(row.marks);
-          row.marks = marks;
+          // Check if the row contains valid data
+          if (filteredRow.marks && isNaN(filteredRow.marks)) {
+            filteredRow.marks = 0; // Set marks to 0 if it's not a valid number
+          }
 
-          const seat = row.seat;
+          const seat = filteredRow.seat;
 
           const checkQuery = 'SELECT * FROM students WHERE seat = ?';
           const [results] = await connection.query(checkQuery, [seat]);
 
           if (results.length > 0) {
-            // const updateQuery = `
-            //   UPDATE students SET 
-            //   name_of_students = ?, centre_name = ?, pro = ?, level = ?, std_cat = ?, batch = ?, row_no = ?, roll_no = ?, marks = ?, position = ?
-            //   WHERE seat = ?
-            // `;
-
-            const updateQuery = 
-            `UPDATE students SET 
+            const updateQuery = `
+              UPDATE students SET 
                 name_of_students = ?, 
                 centre_name = ?, 
                 pro = ?, 
                 level = ?, 
                 std_cat = ?, 
-                state = ? ,
+                state = ?,
                 marks = ?, 
                 position = ?                
-            WHERE seat = ?`;
+              WHERE seat = ?`;
 
             await connection.query(updateQuery, [
-              row.name_of_students,
-              row.centre_name,
-              row.pro,
-              row.level,
-              row.std_cat,
-              row.state,
-              row.marks,
+              filteredRow.name_of_students,
+              filteredRow.centre_name,
+              filteredRow.pro,
+              filteredRow.level,
+              filteredRow.std_cat,
+              filteredRow.state,
+              filteredRow.marks,
               "-",
               seat,
             ]);
           } else {
             const insertQuery = 'INSERT INTO students SET ?';
-            await connection.query(insertQuery, row);
+            await connection.query(insertQuery, filteredRow);
           }
         }
 
@@ -163,6 +166,7 @@ app.post('/upload', async (req, res) => {
     res.status(500).send('Internal Server Error');
   }
 });
+
 
 
   // app.post('/updatePositions', async (req, res) => {
