@@ -150,8 +150,10 @@ const CenterPositions = () => {
     const totalRunner1 = filteredData.reduce((acc, row) => acc + (parseInt(row.runner1) || 0), 0);
     const totalRunner2 = filteredData.reduce((acc, row) => acc + (parseInt(row.runner2) || 0), 0);
     const totalRunner3 = filteredData.reduce((acc, row) => acc + (parseInt(row.runner3) || 0), 0);
+    const totalpart = filteredData.reduce((acc, row) => acc + (parseInt(row.total_participants) || 0), 0);
+    const totalprize = filteredData.reduce((acc, row) => acc + (parseInt(row.total_prizes) || 0), 0);
 
-    setTotals({ totalChampions, totalWinners, totalRunner1, totalRunner2, totalRunner3 });
+    setTotals({ totalChampions, totalWinners, totalRunner1, totalRunner2, totalRunner3,totalpart,totalprize });
   };
 
   const handleCenterChange = (event) => {
@@ -189,8 +191,8 @@ const CenterPositions = () => {
             <PrintOnlyContent>
               <img className="logos" src={logo} alt="Logo" />
               <div className="title">
-                <span>20</span>
-                <span style={{ color: '#C0C0C0' }} className="small-text">th</span> INTERNATIONAL LEVEL COMPETITION
+                <span>12</span>
+                <span style={{ color: '#C0C0C0' }} className="small-text">th</span> STATE LEVEL COMPETITION
               </div>
               <hr />
             </PrintOnlyContent>
@@ -202,7 +204,9 @@ const CenterPositions = () => {
                   <TableHeader>Winner</TableHeader>
                   <TableHeader>Runner 1</TableHeader>
                   <TableHeader>Runner 2</TableHeader>
-                  <TableHeader>Runner 3</TableHeader>
+                  <TableHeader>Total Participant</TableHeader>
+                  <TableHeader>Total prize</TableHeader>
+
                 </tr>
               </thead>
               <tbody>
@@ -213,7 +217,9 @@ const CenterPositions = () => {
                     <TableCell>{row.Winner}</TableCell>
                     <TableCell>{row.runner1}</TableCell>
                     <TableCell>{row.runner2}</TableCell>
-                    <TableCell>{row.runner3}</TableCell>
+                    <TableCell>{row.total_participants}</TableCell>
+                    <TableCell>{row.total_prizes}</TableCell>
+
                   </TableRow>
                 ))}
               </tbody>
@@ -224,7 +230,8 @@ const CenterPositions = () => {
                   <TableCell><strong>{totals.totalWinners}</strong></TableCell>
                   <TableCell><strong>{totals.totalRunner1}</strong></TableCell>
                   <TableCell><strong>{totals.totalRunner2}</strong></TableCell>
-                  <TableCell><strong>{totals.totalRunner3}</strong></TableCell>
+                  <TableCell><strong>{totals.totalpart}</strong></TableCell>
+                  <TableCell><strong>{totals.totalprize}</strong></TableCell>
                 </TableRow>
               
             </Table>

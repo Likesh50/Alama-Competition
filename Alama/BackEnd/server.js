@@ -93,7 +93,7 @@ app.post('/upload', async (req, res) => {
   // Define valid columns for the students table
   const validColumns = [
     's_no', 'name_of_students', 'centre_name', 'pro', 'level', 
-    'std_cat', 'seat', 'batch', 'row_no', 'roll_no', 'marks', 'state'
+    'std_cat', 'seat', 'batch', 'row_no', 'roll_no', 'marks'
   ];
 
   try {
@@ -129,7 +129,6 @@ app.post('/upload', async (req, res) => {
                 pro = ?, 
                 level = ?, 
                 std_cat = ?, 
-                state = ?,
                 marks = ?, 
                 position = ?                
               WHERE seat = ?`;
@@ -140,7 +139,6 @@ app.post('/upload', async (req, res) => {
               filteredRow.pro,
               filteredRow.level,
               filteredRow.std_cat,
-              filteredRow.state,
               filteredRow.marks,
               "-",
               seat,
@@ -563,26 +561,36 @@ WHERE pro = 'MA'
     });
 
     app.get('/center-positions', (req, res) => {
-      const query = `
-        SELECT centre_name, 
-               COUNT(CASE WHEN position = 'Champion' THEN 1 END) AS Champion,
-               COUNT(CASE WHEN position = 'Winner' THEN 1 END) AS Winner,
-               COUNT(CASE WHEN position = 'Runner1' THEN 1 END) AS runner1,
-               COUNT(CASE WHEN position = 'Runner2' THEN 1 END) AS runner2,
-               COUNT(CASE WHEN position = 'Runner3' THEN 1 END) AS runner3
-        FROM students
-        GROUP BY centre_name
-      `;
-    
-      db.query(query, (err, results) => {
-        if (err) {
-          console.error('Failed to fetch data:', err);
-          res.status(500).json({ error: 'Failed to fetch data' });
-        } else {
-          res.json(results);
-        }
-      });
-    });
+  const query = `
+    SELECT 
+      centre_name, 
+      COUNT(*) AS total_participants,
+      COUNT(CASE WHEN position = 'Champion' THEN 1 END) AS Champion,
+      COUNT(CASE WHEN position = 'Winner' THEN 1 END) AS Winner,
+      COUNT(CASE WHEN position = 'Runner1' THEN 1 END) AS runner1,
+      COUNT(CASE WHEN position = 'Runner2' THEN 1 END) AS runner2,
+      COUNT(CASE WHEN position = 'Runner3' THEN 1 END) AS runner3,
+      (
+        COUNT(CASE WHEN position = 'Champion' THEN 1 END) +
+        COUNT(CASE WHEN position = 'Winner' THEN 1 END) +
+        COUNT(CASE WHEN position = 'Runner1' THEN 1 END) +
+        COUNT(CASE WHEN position = 'Runner2' THEN 1 END) +
+        COUNT(CASE WHEN position = 'Runner3' THEN 1 END)
+      ) AS total_prizes
+    FROM students
+    GROUP BY centre_name
+  `;
+
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error('Failed to fetch data:', err);
+      res.status(500).json({ error: 'Failed to fetch data' });
+    } else {
+      res.json(results);
+    }
+  });
+});
+
 
     app.get('/centers-without-positions', (req, res) => {
       const query = `
@@ -1847,7 +1855,7 @@ app.post('/calculatePositions', async (req, res) => {
 
 app.post('/updatePositions-national', async (req, res) => {
   const { positionThresholds } = req.body; // Only receiving position thresholds
-
+  console.log("Hello bro");
   try {
     // Step 1: Fetch all students with their marks grouped by pro, level, std_cat
     const [students] = await db.promise().query(`
@@ -1881,61 +1889,92 @@ app.post('/updatePositions-national', async (req, res) => {
       return acc;
     }, {});
 
+
+
     // Step 3: Assign positions considering tied ranks and thresholds
-    const updatePositionsPromises = Object.entries(groupedStudents).flatMap(([key, studentsInGroup]) => {
-      const thresholds = positionThresholds[key] || { Winner: 20, Runner1: 40, Runner2: 60, Runner3: 80, cutoff: 0 };
-      const cutoff = thresholds.cutoff || 0;
+const updatePositionsPromises = Object.entries(groupedStudents).flatMap(([key, studentsInGroup]) => {
+  const thresholds = positionThresholds[key] || { Winner: 20, Runner1: 40, Runner2: 60, Runner3: 80, cutoff: 0 };
+  const cutoff = thresholds.cutoff || 0;
 
-      let remainingThresholds = {
-        Winner: thresholds.Winner,
-        Runner1: thresholds.Runner1,
-        Runner2: thresholds.Runner2,
-        Runner3: thresholds.Runner3,
-      };
+  // remainingSeats are counts of students allowed for each position
+  let remainingSeats = {
+    Winner: thresholds.Winner,
+    Runner1: thresholds.Runner1,
+    Runner2: thresholds.Runner2,
+    Runner3: thresholds.Runner3,
+  };
 
-      let currentPosition = 'Winner';
+  // helper to advance to next position string
+  const nextPosition = (pos) => {
+    if (pos === 'Winner') return 'Runner1';
+    if (pos === 'Runner1') return 'Runner2';
+    if (pos === 'Runner2') return 'Runner3';
+    return '-';
+  };
 
-      // Sort students by rank
-      studentsInGroup.sort((a, b) => a.student_rank - b.student_rank);
+  // Sort students by rank (ascending)
+  studentsInGroup.sort((a, b) => a.student_rank - b.student_rank);
 
-      // Track last processed rank for tied rank handling
-      let lastProcessedRank = null;
-      let lastAssignedPosition = null;
+  // Group by rank -> { rankValue: [students...] }
+  const rankGroups = studentsInGroup.reduce((acc, s) => {
+    acc[s.student_rank] = acc[s.student_rank] || [];
+    acc[s.student_rank].push(s);
+    return acc;
+  }, {});
 
-      return studentsInGroup.map(student => {
-        if (student.marks < cutoff) {
-          return db.promise().query('UPDATE students SET position = ? WHERE seat = ?', ['-', student.seat]);
-        }
+  // Process each rank group in order
+  let currentPosition = 'Winner';
+  const queries = [];
 
-        if (lastProcessedRank === student.student_rank) {
-          // Same rank as the last student, assign the same position
-          return db.promise().query('UPDATE students SET position = ? WHERE seat = ?', [lastAssignedPosition, student.seat]);
-        }
+  const sortedRanks = Object.keys(rankGroups).map(Number).sort((a, b) => a - b);
 
-        // Move to the next position if the current threshold is exhausted
-        while (remainingThresholds[currentPosition] === 0) {
-          if (currentPosition === 'Winner') {
-            currentPosition = 'Runner1';
-          } else if (currentPosition === 'Runner1') {
-            currentPosition = 'Runner2';
-          } else if (currentPosition === 'Runner2') {
-            currentPosition = 'Runner3';
-          } else {
-            currentPosition = '-';
-          }
-        }
+  for (const rank of sortedRanks) {
+    const group = rankGroups[rank];
+    // If group's marks are below cutoff (all have same marks in tie group), mark them '-'
+    // We'll just check the first student in the group
+    if (group[0].marks < cutoff) {
+      for (const student of group) {
+        queries.push(db.promise().query('UPDATE students SET position = ? WHERE seat = ?', ['-', student.seat]));
+      }
+      // do not change currentPosition or remainingSeats
+      continue;
+    }
 
-        lastProcessedRank = student.student_rank;
-        lastAssignedPosition = currentPosition;
+    // Ensure currentPosition points to a position with available seats, or '-' if none
+    while (currentPosition !== '-' && remainingSeats[currentPosition] === 0) {
+      currentPosition = nextPosition(currentPosition);
+    }
 
-        // Decrement the threshold for the current position
-        if (currentPosition !== '-') {
-          remainingThresholds[currentPosition]--;
-        }
+    if (currentPosition === '-') {
+      // All positions exhausted -> assign '-' to everyone in this group
+      for (const student of group) {
+        queries.push(db.promise().query('UPDATE students SET position = ? WHERE seat = ?', ['-', student.seat]));
+      }
+      continue;
+    }
 
-        return db.promise().query('UPDATE students SET position = ? WHERE seat = ?', [currentPosition, student.seat]);
-      });
-    });
+    // Assign whole tied group to currentPosition.
+    // Even if group size > remainingSeats[currentPosition], we assign the entire group (tie rule)
+    for (const student of group) {
+      queries.push(db.promise().query('UPDATE students SET position = ? WHERE seat = ?', [currentPosition, student.seat]));
+    }
+
+    // Subtract the group's size from remainingSeats (can go negative or to zero).
+    // But we'll clamp at 0 to ensure while() above will advance next time.
+    remainingSeats[currentPosition] -= group.length;
+    if (remainingSeats[currentPosition] <= 0) {
+      remainingSeats[currentPosition] = 0;
+      // next different rank will cause while() to advance to nextPosition
+    }
+  }
+
+  return queries;
+});
+
+
+
+
+
 
     await Promise.all(updatePositionsPromises.flat());
 

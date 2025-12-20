@@ -9,141 +9,115 @@ const ModifyPosition = () => {
   const [students, setStudents] = useState([]);
   const [positionData, setPositionData] = useState({});
   const [proLevelStdCatOptions, setProLevelStdCatOptions] = useState([]); 
+  const [centerOptions, setCenterOptions] = useState([]); 
+  const [selectedCenter, setSelectedCenter] = useState('');
   const [selectedProLevelStdCat, setSelectedProLevelStdCat] = useState('');
-  const [seatNumber, setSeatNumber] = useState(''); // New state for seat number input
+  const [seatNumber, setSeatNumber] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const notifysuccess = () => {
-    toast.success('Updated Positions Successfully!', {
-      position: "top-center",
-      autoClose: 3000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "colored",
-      transition: Zoom,
-    });
+    toast.success('Updated Positions Successfully!', { position: "top-center", theme: "colored", transition: Zoom });
   };
 
   const notifyfailure = () => {
-    toast.error('Error Updating Positions!', {
-      position: "top-center",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "colored",
-      transition: Zoom,
-    });
+    toast.error('Error Updating Positions!', { position: "top-center", theme: "colored", transition: Zoom });
   };
 
-  // Fetch data for dropdown
+  // Fetch dropdown data once
   useEffect(() => {
     setLoading(true);
     axios.get(`${import.meta.env.VITE_ALAMA_Competition_URL}/data2`)
       .then(response => {
         setLoading(false);
+        const data = response.data;
 
-        const processedData = response.data;
-        const dataWithLevel = processedData.map((row) => ({
-          ...row,
-          "Pro + Level+ std cat": (row.pro || 0) + " " + (row.level || 0) + " " + (row.std_cat),
-        }));
-
-        const uniqueProLevelStdCat = [...new Set(dataWithLevel.map(item => item["centre_name"]))];
+        // Create combined options for Pro + Level + Std Cat
+        const uniqueProLevelStdCat = [...new Set(
+          data.map(item => `${item.pro || ''} ${item.level || ''} ${item.std_cat || ''}`)
+        )];
         setProLevelStdCatOptions(uniqueProLevelStdCat);
 
-        if (uniqueProLevelStdCat.length > 0) {
-          setSelectedProLevelStdCat(uniqueProLevelStdCat[0]); 
+        // Create unique center options
+        const uniqueCenters = [...new Set(data.map(item => item.centre_name))];
+        setCenterOptions(uniqueCenters);
+      })
+      .catch(() => setLoading(false));
+  }, []);
+
+  // Fetch data when either dropdown changes
+  useEffect(() => {
+    if (!selectedCenter && !selectedProLevelStdCat) return;
+
+    setLoading(true);
+    axios.get(`${import.meta.env.VITE_ALAMA_Competition_URL}/data2`)
+      .then(response => {
+        setLoading(false);
+        const data = response.data;
+
+        let filteredStudents = [];
+        if (selectedCenter) {
+          filteredStudents = data.filter(s => s.centre_name === selectedCenter);
+        } else if (selectedProLevelStdCat) {
+
+          const parts = selectedProLevelStdCat.split(' ');
+          const pro = parts[0];
+          const std_cat = parts[parts.length - 1];
+          const level = parts.slice(1, parts.length - 1).join(' ');
+
+          filteredStudents = data.filter(s =>
+            `${s.pro} ${s.level} ${s.std_cat}` === `${pro} ${level} ${std_cat}`
+          );
         }
+
+        setStudents(filteredStudents);
+
+        const initialPositions = {};
+        filteredStudents.forEach(student => {
+          initialPositions[student.seat] = student.position || '-';
+        });
+        setPositionData(initialPositions);
+      })
+      .catch(() => setLoading(false));
+  }, [selectedCenter, selectedProLevelStdCat]);
+
+  const searchBySeatNumber = () => {
+    if (!seatNumber) return;
+    setLoading(true);
+    axios.get(`${import.meta.env.VITE_ALAMA_Competition_URL}/data2/seat/${seatNumber}`)
+      .then(response => {
+        setLoading(false);
+        const student = response.data;
+        setStudents([student]);
+        setPositionData({ [student.seat]: student.position || '-' });
       })
       .catch(error => {
         setLoading(false);
+        if (error.response?.status === 404) {
+          toast.error('No student found with the given seat number', { position: "top-center", theme: "colored" });
+        } else {
+          toast.error('Error fetching student data', { position: "top-center", theme: "colored" });
+        }
       });
-  }, []);
-
-  // Fetch data based on dropdown selection
-  useEffect(() => {
-    setLoading(true);
-    if (selectedProLevelStdCat) {
-      axios.get(`${import.meta.env.VITE_ALAMA_Competition_URL}/data2`) 
-        .then(response => {
-          setLoading(false);
-          const filteredStudents = response.data.filter(student => 
-            (student.centre_name) === selectedProLevelStdCat
-          );
-          setStudents(filteredStudents);
-          const initialPositions = {};
-          filteredStudents.forEach(student => {
-            initialPositions[student.seat] = student.position || '-';
-          });
-          setPositionData(initialPositions);
-        })
-        .catch(error => {
-          setLoading(false);
-        });
-    }
-  }, [selectedProLevelStdCat]);
-
-  // Handle search by seat number
-  const searchBySeatNumber = () => {
-    if (seatNumber) {
-      setLoading(true);
-      axios.get(`${import.meta.env.VITE_ALAMA_Competition_URL}/data2/seat/${seatNumber}`)
-        .then(response => {
-          setLoading(false);
-          const student = response.data;
-          setStudents([student]); // Render only the matched student
-          setPositionData({ [student.seat]: student.position || '-' });
-        })
-        .catch(error => {
-          setLoading(false);
-          if (error.response && error.response.status === 404) {
-            toast.error('No student found with the given seat number', {
-              position: "top-center",
-              autoClose: 3000,
-              theme: "colored",
-            });
-          } else {
-            toast.error('Error fetching student data', {
-              position: "top-center",
-              autoClose: 3000,
-              theme: "colored",
-            });
-          }
-        });
-    }
   };
 
   const handlePositionChange = (seat, value) => {
-    setPositionData(prevState => ({
-      ...prevState,
-      [seat]: value,
-    }));
+    setPositionData(prev => ({ ...prev, [seat]: value }));
   };
 
   const updatePositions = () => {
     setIsLoading(true);
     setLoading(true);
 
-    const positionArray = Object.entries(positionData).map(([seat, position]) => ({
-      seat,
-      position,
-    }));
+    const positionArray = Object.entries(positionData).map(([seat, position]) => ({ seat, position }));
 
     axios.post(`${import.meta.env.VITE_ALAMA_Competition_URL}/modifyPositions`, { positionData: positionArray })
-      .then(response => {
+      .then(() => {
         setLoading(false);
         setIsLoading(false);
         notifysuccess();
-        
       })
-      .catch(error => {
+      .catch(() => {
         setLoading(false);
         setIsLoading(false);
         notifyfailure();
@@ -154,19 +128,45 @@ const ModifyPosition = () => {
     <div className="container">
       <h2>Modify Position</h2>
 
-      <div className="select-container">
-        <label>Select Pro + Level + std cat: </label>
-        <select
-          value={selectedProLevelStdCat}
-          onChange={(e) => setSelectedProLevelStdCat(e.target.value)}
-          style={{ width: "130px" }}
-        >
-          {proLevelStdCatOptions.map((option, index) => (
-            <option key={index} value={option}>{option}</option>
-          ))}
-        </select>
+      <div className="select-container" style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
+        {/* Center Name Dropdown */}
+        <div>
+          <label>Center Name: </label>
+          <select
+            value={selectedCenter}
+            onChange={(e) => {
+              setSelectedCenter(e.target.value);
+              setSelectedProLevelStdCat(''); // clear other dropdown
+            }}
+            disabled={!!selectedProLevelStdCat} // disable if other selected
+          >
+            <option value="">Select Center</option>
+            {centerOptions.map((option, i) => (
+              <option key={i} value={option}>{option}</option>
+            ))}
+          </select>
+        </div>
+
+        {/* Pro + Level + Std Cat Dropdown */}
+        <div>
+          <label>Pro + Level + Std Cat: </label>
+          <select
+            value={selectedProLevelStdCat}
+            onChange={(e) => {
+              setSelectedProLevelStdCat(e.target.value);
+              setSelectedCenter(''); // clear other dropdown
+            }}
+            disabled={!!selectedCenter} // disable if other selected
+          >
+            <option value="">Select Pro + Level + Std Cat</option>
+            {proLevelStdCatOptions.map((option, i) => (
+              <option key={i} value={option}>{option}</option>
+            ))}
+          </select>
+        </div>
       </div>
 
+      {/* Search by Seat */}
       <div className="search-container">
         <label>Search by Seat Number: </label>
         <input 
@@ -179,35 +179,36 @@ const ModifyPosition = () => {
         <button onClick={searchBySeatNumber}>Search</button>
       </div>
 
-      {isLoading ? <p>Updating positions...</p> : null}
+      {isLoading && <p>Updating positions...</p>}
 
+      {/* Table */}
       <table>
         <thead>
           <tr>
-            <th style={{ width: '150px' }}>S NO</th>
-            <th style={{ width: '150px' }}>Name</th>
-            <th style={{ width: '150px' }}>Center name</th>
-            <th style={{ width: '150px' }}>Mark</th>
-            <th style={{ width: '150px' }}>Pro</th>
-            <th style={{ width: '150px' }}>Level</th>
-            <th style={{ width: '150px' }}>CAtegory</th>
-            <th style={{ width: '150px' }}>Modified Position</th>
+            <th>S NO</th>
+            <th>Name</th>
+            <th>Center Name</th>
+            <th>Pro</th>
+            <th>Level</th>
+            <th>Category</th>
+            <th>Marks</th>
+            <th>Modified Position</th>
           </tr>
         </thead>
         <tbody>
           {students.map((student, index) => (
             <tr key={student.seat}>
-              <td style={{ width: '150px' }}>{index + 1}</td>
-              <td style={{ width: '150px' }}>{student.name_of_students}</td>
-              <td style={{ width: '150px' }}>{student.centre_name}</td>
-              <td style={{ width: '150px' }}>{student.pro}</td>
-              <td style={{ width: '150px' }}>{student.level}</td>
-              <td style={{ width: '150px' }}>{student.std_cat}</td>
-              <td style={{ width: '150px' }}>{student.marks}</td>
-              <td style={{ width: '150px' }}>
+              <td>{index + 1}</td>
+              <td>{student.name_of_students}</td>
+              <td>{student.centre_name}</td>
+              <td>{student.pro}</td>
+              <td>{student.level}</td>
+              <td>{student.std_cat}</td>
+              <td>{student.marks}</td>
+              <td>
                 <select
-                  value={positionData[student.seat] || student.position} 
-                  onChange={(e) => handlePositionChange(student.seat, e.target.value)}  
+                  value={positionData[student.seat] || student.position || '-'}
+                  onChange={(e) => handlePositionChange(student.seat, e.target.value)}
                 >
                   <option value="Champion">Champion</option>
                   <option value="Winner">Winner</option>
@@ -222,19 +223,15 @@ const ModifyPosition = () => {
         </tbody>
       </table>
 
-      <button onClick={updatePositions} disabled={isLoading} style={{ marginLeft: "45%" }}>Update Positions</button>
+      <button onClick={updatePositions} disabled={isLoading} style={{ marginLeft: "45%" }}>
+        Update Positions
+      </button>
 
       {loading && (
         <div style={{
-          position: 'fixed',
-          top: '0',
-          left: '0',
-          width: '100%',
-          height: '100%',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          backgroundColor: 'rgba(255, 255, 255, 0.7)',
+          position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
+          display: 'flex', justifyContent: 'center', alignItems: 'center',
+          backgroundColor: 'rgba(255,255,255,0.7)',
         }}>
           <HashLoader color="#501960" loading={loading} size={90} />
         </div>

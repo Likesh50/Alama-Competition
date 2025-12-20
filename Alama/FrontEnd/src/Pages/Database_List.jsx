@@ -116,64 +116,76 @@ const Database_List = () => {
     setCalculating(true); 
   
     const categoryData = {
-      "AA PRE LEVEL BABY JUNIOR": { "Winner": 1, "Runner1": 2, "Runner2": 2, "Runner3": 3,"cutoff":35 },
-      "AA BASIC BABY JUNIOR": { "Winner": 1, "Runner1": 1, "Runner2": 1, "Runner3": 2,"cutoff":35 },
-      "AA BASIC SUB JUNIOR": { "Winner": 2, "Runner1": 2, "Runner2": 4, "Runner3": 4,"cutoff":35 },
-      "AA BASIC JUNIOR": { "Winner": 1, "Runner1": 2, "Runner2": 2, "Runner3": 3,"cutoff":35 },
-      "AA BASIC SENIOR": { "Winner": 1, "Runner1": 2, "Runner2": 2, "Runner3": 3,"cutoff":35 },
+
+      "AA BASIC BABY JUNIOR": { "Winner": 1, "Runner1": 2, "Runner2": 3, "Runner3": 3,"cutoff":0 },
+      "AA BASIC SUB-JUNIOR": { "Winner": 1, "Runner1": 1, "Runner2": 2, "Runner3": 2,"cutoff":0 },
+      "AA BASIC JUNIOR": { "Winner": 1, "Runner1": 1, "Runner2": 2, "Runner3": 2,"cutoff":0 },
+      "AA BASIC SENIOR": { "Winner": 1, "Runner1": 1, "Runner2": 0, "Runner3": 0,"cutoff":0 },
     
-      "AA 1 SUB JUNIOR": { "Winner": 1, "Runner1": 1, "Runner2": 1, "Runner3": 2,"cutoff":35 },
-      "AA 1 JUNIOR": { "Winner": 1, "Runner1": 1, "Runner2": 2, "Runner3": 3,"cutoff":35 },
-      "AA 1 SENIOR": { "Winner": 1, "Runner1": 1, "Runner2": 2, "Runner3": 2,"cutoff":35 },
+      "AA 1 BABY JUNIOR": { "Winner": 0, "Runner1": 0, "Runner2": 0, "Runner3": 0,"cutoff":0 },
+      "AA 1 SUB-JUNIOR": { "Winner": 1, "Runner1": 1, "Runner2": 2, "Runner3": 3,"cutoff":0 },
+      "AA 1 JUNIOR": { "Winner": 1, "Runner1": 2, "Runner2": 2, "Runner3": 3,"cutoff":0 },
+      "AA 1 SENIOR": { "Winner": 1, "Runner1": 1, "Runner2": 1, "Runner3": 1,"cutoff":0 },
     
-      "AA 2 SUB JUNIOR": { "Winner": 1, "Runner1": 1, "Runner2": 1, "Runner3": 1,"cutoff":35 },
-      "AA 2 JUNIOR": { "Winner": 1, "Runner1": 1, "Runner2": 2, "Runner3": 3,"cutoff":35 },
-      "AA 2 SENIOR": { "Winner": 1, "Runner1": 1, "Runner2": 1, "Runner3": 2,"cutoff":35 },
+      "AA 2 SUB-JUNIOR": { "Winner": 1, "Runner1": 1, "Runner2": 2, "Runner3": 3,"cutoff":0 },
+      "AA 2 JUNIOR": { "Winner": 1, "Runner1": 1, "Runner2": 2, "Runner3": 3,"cutoff":0 },
+      "AA 2 SENIOR": { "Winner": 1, "Runner1": 1, "Runner2": 2, "Runner3": 3,"cutoff":0 },
     
-      "AA 3 SUB JUNIOR": { "Winner": 1, "Runner1": 1, "Runner2": 1, "Runner3": 0,"cutoff":35 },  
-      "AA 3 JUNIOR": { "Winner": 1, "Runner1": 1, "Runner2": 1, "Runner3": 2,"cutoff":35 },
-      "AA 3 SENIOR": { "Winner": 2, "Runner1": 2, "Runner2": 3, "Runner3": 4,"cutoff":35 },
+      "AA 3 SUB-JUNIOR": { "Winner": 1, "Runner1": 1, "Runner2": 1, "Runner3": 2,"cutoff":0 },
+      "AA 3 JUNIOR": { "Winner": 1, "Runner1": 2, "Runner2": 2, "Runner3": 3,"cutoff":0 },
+      "AA 3 SENIOR": { "Winner": 1, "Runner1": 2, "Runner2": 3, "Runner3": 4,"cutoff":0 },
     
-      "AA 4 SUB JUNIOR": { "Winner": 1, "Runner1": 0, "Runner2": 0, "Runner3": 0,"cutoff":35 },
-      "AA 4 JUNIOR": { "Winner": 1, "Runner1": 1, "Runner2": 1, "Runner3": 1,"cutoff":35 },
-      "AA 4 SENIOR": { "Winner": 1, "Runner1": 2, "Runner2": 3, "Runner3": 3,"cutoff":35 },
+      "AA 4 SUB-JUNIOR": { "Winner": 0, "Runner1": 0, "Runner2": 0, "Runner3": 0,"cutoff":0 },
+      "AA 4 JUNIOR": { "Winner": 1, "Runner1": 1, "Runner2": 1, "Runner3": 1,"cutoff":0 },
+      "AA 4 SENIOR": { "Winner": 1, "Runner1": 2, "Runner2": 3, "Runner3": 4,"cutoff":0 },
     
-      "AA 5 SUB JUNIOR": { "Winner": 0, "Runner1": 0, "Runner2": 0, "Runner3": 0,"cutoff":30 },
-      "AA 5 JUNIOR": { "Winner": 1, "Runner1": 0, "Runner2": 0, "Runner3": 0,"cutoff":30 },
-      "AA 5 SENIOR": { "Winner": 1, "Runner1": 1, "Runner2": 1, "Runner3": 0,"cutoff":30 },
-    
-      "AA 6 JUNIOR": { "Winner": 0, "Runner1": 0, "Runner2": 0, "Runner3": 0,"cutoff":30 },
-      "AA 6 SENIOR": { "Winner": 1, "Runner1": 1, "Runner2": 1, "Runner3": 0,"cutoff":30 },
+      "AA 5 SUB-JUNIOR": { "Winner": 0, "Runner1": 0, "Runner2": 0, "Runner3": 0,"cutoff":0 },
+      "AA 5 JUNIOR": { "Winner": 1, "Runner1": 1, "Runner2": 0, "Runner3": 0,"cutoff":0 },
+      "AA 5 SENIOR": { "Winner": 1, "Runner1": 2, "Runner2": 3, "Runner3": 4,"cutoff":0 },
+
+      "AA 6 SUB-JUNIOR": { "Winner": 0, "Runner1": 0, "Runner2": 0, "Runner3": 0,"cutoff":0 },
+      "AA 6 JUNIOR": { "Winner": 0, "Runner1": 0, "Runner2": 0, "Runner3": 0,"cutoff":0 },
+      "AA 6 SENIOR": { "Winner": 1, "Runner1": 1, "Runner2": 2, "Runner3": 3,"cutoff":0 },
 
 
     
-      "MA BASIC SUB JUNIOR": { "Winner": 1, "Runner1": 2, "Runner2": 3, "Runner3": 3,"cutoff":35 },
-      "MA BASIC JUNIOR": { "Winner": 2, "Runner1": 2, "Runner2": 4, "Runner3": 4,"cutoff":35 },
-      "MA BASIC SENIOR": { "Winner": 1, "Runner1": 1, "Runner2": 2, "Runner3": 3,"cutoff":35 },
+      "MA BASIC SUB-JUNIOR": { "Winner": 1, "Runner1": 1, "Runner2": 1, "Runner3": 0,"cutoff":0 },
+      "MA BASIC JUNIOR": { "Winner": 1, "Runner1": 1, "Runner2": 2, "Runner3": 3,"cutoff":0 },
+      "MA BASIC SENIOR": { "Winner": 1, "Runner1": 1, "Runner2": 1, "Runner3": 0,"cutoff":0 },
+      "MA BASIC SUPER SENIOR": { "Winner": 0, "Runner1": 0, "Runner2": 0, "Runner3": 0,"cutoff":0 },
     
-      "MA 1 SUB JUNIOR": { "Winner": 1, "Runner1": 2, "Runner2": 4, "Runner3": 4 ,"cutoff":35},
-      "MA 1 JUNIOR": { "Winner": 2, "Runner1": 3, "Runner2": 4, "Runner3": 6 ,"cutoff":35},
-      "MA 1 SENIOR": { "Winner": 1, "Runner1": 2, "Runner2": 3, "Runner3": 4,"cutoff":35 },
+      "MA 1 SUB-JUNIOR": { "Winner": 1, "Runner1": 1, "Runner2": 1, "Runner3": 1 ,"cutoff":0},
+      "MA 1 JUNIOR": { "Winner": 1, "Runner1": 2, "Runner2": 3, "Runner3": 4 ,"cutoff":0},
+      "MA 1 SENIOR": { "Winner": 1, "Runner1": 2, "Runner2": 2, "Runner3": 3,"cutoff":0 },
+      "MA 1 SUPER SENIOR": { "Winner": 1, "Runner1": 1, "Runner2": 0, "Runner3": 0 ,"cutoff":0},
     
-      "MA 2 SUB JUNIOR": { "Winner": 1, "Runner1": 1, "Runner2": 1, "Runner3": 0,"cutoff":35 },
-      "MA 2 JUNIOR": { "Winner": 1, "Runner1": 2, "Runner2": 4, "Runner3": 4 ,"cutoff":35},
-      "MA 2 SENIOR": { "Winner": 1, "Runner1": 1, "Runner2": 2, "Runner3": 2 ,"cutoff":35},
+      "MA 2 SUB-JUNIOR": { "Winner": 0, "Runner1": 0, "Runner2": 0, "Runner3": 0 ,"cutoff":0},
+      "MA 2 JUNIOR": { "Winner": 1, "Runner1": 2, "Runner2": 3, "Runner3": 3 ,"cutoff":0},
+      "MA 2 SENIOR": { "Winner": 2, "Runner1": 2, "Runner2": 3, "Runner3": 4,"cutoff":0 },
+      "MA 2 SUPER SENIOR": { "Winner": 1, "Runner1": 1, "Runner2": 1, "Runner3": 0 ,"cutoff":0},
+
     
-      "MA 3 SUB JUNIOR": { "Winner": 0, "Runner1": 0, "Runner2": 0, "Runner3": 0,"cutoff":30 },
-      "MA 3 JUNIOR": { "Winner": 1, "Runner1": 1, "Runner2": 2, "Runner3": 2,"cutoff":30 },
-      "MA 3 SENIOR": { "Winner": 1, "Runner1": 1, "Runner2": 2, "Runner3": 3,"cutoff":30 },
+      "MA 3 SUB-JUNIOR": { "Winner": 0, "Runner1": 0, "Runner2": 0, "Runner3": 0 ,"cutoff":0},
+      "MA 3 JUNIOR": { "Winner": 1, "Runner1": 1, "Runner2": 2, "Runner3": 2 ,"cutoff":0},
+      "MA 3 SENIOR": { "Winner": 1, "Runner1": 2, "Runner2": 3, "Runner3": 3,"cutoff":0 },
+      "MA 3 SUPER SENIOR": { "Winner": 1, "Runner1": 1, "Runner2": 1, "Runner3": 0 ,"cutoff":0},
+
+      "MA 4 SUB-JUNIOR": { "Winner": 0, "Runner1": 0, "Runner2": 0, "Runner3": 0 ,"cutoff":0},
+      "MA 4 JUNIOR": { "Winner": 1, "Runner1": 1, "Runner2": 0, "Runner3": 0 ,"cutoff":0},
+      "MA 4 SENIOR": { "Winner": 1, "Runner1": 1, "Runner2": 2, "Runner3": 2,"cutoff":0 },
+      "MA 4 SUPER SENIOR": { "Winner": 1, "Runner1": 1, "Runner2": 1, "Runner3": 0 ,"cutoff":0},
+
+      "MA 5 SUB-JUNIOR": { "Winner": 0, "Runner1": 0, "Runner2": 0, "Runner3": 0 ,"cutoff":0},
+      "MA 5 JUNIOR": { "Winner": 1, "Runner1": 1, "Runner2": 0, "Runner3": 0 ,"cutoff":0},
+      "MA 5 SENIOR": { "Winner": 1, "Runner1": 1, "Runner2": 1, "Runner3": 0,"cutoff":0 },
+      "MA 5 SUPER SENIOR": { "Winner": 1, "Runner1": 0, "Runner2": 0, "Runner3": 0 ,"cutoff":0},
     
-      "MA 4 SUB JUNIOR": { "Winner": 1, "Runner1": 0, "Runner2": 0, "Runner3": 0,"cutoff":30 },
-      "MA 4 JUNIOR": { "Winner": 1, "Runner1": 1, "Runner2": 1, "Runner3": 0 ,"cutoff":30},
-      "MA 4 SENIOR": { "Winner": 1, "Runner1": 1, "Runner2": 1, "Runner3": 1 ,"cutoff":30},
-    
-      "MA 5 SUB JUNIOR": { "Winner": 0, "Runner1": 0, "Runner2": 0, "Runner3": 0,"cutoff":25 },
-      "MA 5 JUNIOR": { "Winner": 1, "Runner1": 1, "Runner2": 1, "Runner3": 0,"cutoff":25 },
-      "MA 5 SENIOR": { "Winner": 0, "Runner1": 0, "Runner2": 0, "Runner3": 0,"cutoff":25 },
-    
-      "MA 6 SUB JUNIOR": { "Winner": 1, "Runner1": 1, "Runner2": 1, "Runner3": 0,"cutoff":25 },
-      "MA 6 JUNIOR": { "Winner": 2, "Runner1": 2, "Runner2": 4, "Runner3": 4,"cutoff":25 },
-      "MA 6 SENIOR": { "Winner": 2, "Runner1": 4, "Runner2": 5, "Runner3": 6,"cutoff":25 }
+      "MA 6 SUB-JUNIOR": { "Winner": 0, "Runner1": 0, "Runner2": 0, "Runner3": 0 ,"cutoff":0},
+      "MA 6 JUNIOR": { "Winner": 1, "Runner1": 2, "Runner2": 3, "Runner3": 3 ,"cutoff":0},
+      "MA 6 SENIOR": { "Winner": 2, "Runner1": 3, "Runner2": 4, "Runner3": 5,"cutoff":0 },
+      "MA 6 SUPER SENIOR": { "Winner": 1, "Runner1": 1, "Runner2": 2, "Runner3": 3 ,"cutoff":0},
+
+
     };
     
     
@@ -236,12 +248,13 @@ const Database_List = () => {
   };
 
   const getDistinctProLevelStdCat = () => {
-    const uniqueValues = [...new Set(tableData.map(row => row["Pro + Level+ std cat"]))];
+    const uniqueValues = [...new Set(tableData.map
+      (row => row["Pro + Level+ std cat"]))];
     return uniqueValues;
   };
 
   const handlePrint = useReactToPrint({
-    content: () => m.current, 
+    content: () => printRef.current, 
     documentTitle: 'Custom Table Report',
   });
 
@@ -271,14 +284,14 @@ const Database_List = () => {
           {calculating ? 'Calculating...' : 'Calculate Results'}
         </button>
 
-        <button
+        {/* <button
           className="new-button"
           onClick={handleNewButtonClick}
           disabled={newButtonLoading}
           style={{ marginLeft: '10px',marginBottom: '10px' }}
         >
           {newButtonLoading ? 'Loading...' : 'Calculate Champion'}
-        </button>
+        </button> */}
       </div>
       <div className="dropdown-container">
       <div>
@@ -356,12 +369,12 @@ const Database_List = () => {
           ))}
         </tbody>
       </table>
-{/* 
+
       <div>
   <button onClick={() => console.log(getDistinctProLevelStdCat())}>
     Show Distinct Pro + Level + Std Cat
   </button>
-</div> */}
+</div>
 
 
 
